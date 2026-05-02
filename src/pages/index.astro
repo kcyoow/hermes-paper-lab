@@ -10,7 +10,7 @@ const vbLoraHref = `${base}papers/vb-lora/`;
       <span class="kicker">논문 전체 흐름 해설 아카이브</span>
       <h1>논문을 짧게 뭉개지 않고, 처음부터 끝까지 따라 읽는 지식베이스.</h1>
       <p>
-        디스코드에는 짧은 링크만 남기고, 실제 분석은 웹 페이지에서 봅니다. 각 논문은 초록부터 결론/부록까지 섹션 순서를 유지하며, 핵심 주장·표·그림·한계·구현 아이디어를 한국어로 가볍게 정리합니다.
+        디스코드에는 짧은 링크만 남기고, 실제 분석은 웹 페이지에서 봅니다. 각 논문은 초록부터 결론/부록까지 섹션 순서를 유지하며, 핵심 주장·표·원문 Figure·수식·한계·구현 아이디어를 최대한 한국어로 풀어 정리합니다.
       </p>
       <div class="hero-actions">
         <a class="pill dark" href={vbLoraHref}>VB-LoRA 보기</a>
@@ -43,7 +43,7 @@ const vbLoraHref = `${base}papers/vb-lora/`;
           </div>
           <div class="meta-line">
             <span>저자: Tao Ge, Baolin Peng, Hao Cheng, Jianfeng Gao</span>
-            <span>상태: 전체 흐름 해설 완료</span>
+            <span>상태: 전체 흐름 해설 완료 · 원문 Figure/수식 해설 포함</span>
           </div>
           <div class="hero-actions" style="justify-content:flex-start">
             <a class="pill dark" href={firstPaperHref}>해설 열기</a>
@@ -72,7 +72,7 @@ const vbLoraHref = `${base}papers/vb-lora/`;
           </div>
           <div class="meta-line">
             <span>저자: Yang Li, Shaobo Han, Shihao Ji</span>
-            <span>상태: 전체 흐름 해설 완료 · imggen high 시각화 포함</span>
+            <span>상태: 전체 흐름 해설 완료 · 원문 Figure/수식 해설/imggen high 시각화 포함</span>
           </div>
           <div class="hero-actions" style="justify-content:flex-start">
             <a class="pill dark" href={vbLoraHref}>해설 열기</a>
@@ -95,14 +95,26 @@ const vbLoraHref = `${base}papers/vb-lora/`;
       <div class="grid three">
         <div class="card">
           <h3>1. 전체 구조 보존</h3>
-          <p>초록, 서론, 방법, 실험, 논의, 결론, 부록 순서를 유지합니다.</p>
+          <p>초록, 서론, 방법, 실험, 논의, 결론, 부록 순서를 유지하고 최대한 한국어로 번역·해설합니다.</p>
         </div>
         <div class="card">
-          <h3>2. 원문 근거 유지</h3>
-          <p>중요 숫자, 그림/표 번호, 실험 조건은 원문 기준으로 보존하고, 저자 주장과 해석을 분리합니다.</p>
+          <h3>2. 원문 Figure 포함</h3>
+          <p>원문 Figure는 번호별로 따로 넣고, 각 Figure 아래에 한국어 캡션 번역과 읽는 법을 덧붙입니다.</p>
         </div>
         <div class="card">
-          <h3>3. 외부 산출물 우선</h3>
+          <h3>3. 수식은 LaTeX로 분리</h3>
+          <p>핵심 수식은 별도 섹션에서 LaTeX로 표시하고, 각 기호·직관·주의점을 자세히 설명합니다.</p>
+        </div>
+        <div class="card">
+          <h3>4. 원문 근거 유지</h3>
+          <p>중요 숫자, 그림/표/수식 번호, 실험 조건은 원문 기준으로 보존하고, 저자 주장과 해석을 분리합니다.</p>
+        </div>
+        <div class="card">
+          <h3>5. 이해용 고품질 시각화</h3>
+          <p>원문 Figure와 별도로 필요하면 imggen high 기반 이해용 인포그래픽을 추가합니다.</p>
+        </div>
+        <div class="card">
+          <h3>6. 외부 산출물 우선</h3>
           <p>디스코드에는 긴 분석을 보내지 않고, HTML/GitHub Pages/이미지/PDF 같은 외부 산출물 링크를 공유합니다.</p>
         </div>
       </div>

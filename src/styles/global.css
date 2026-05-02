@@ -108,6 +108,22 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.06
 .figure-card { margin: 24px 0; border: 1px solid var(--line); border-radius: 22px; padding: 18px; background: #fbfbfb; }
 .figure-card img { display: block; width: 100%; border-radius: 16px; background: #0d0d0d; }
 .figure-caption { margin-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.source-figure-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 20px 0; }
+.source-figure-card { border: 1px solid var(--line); border-radius: 20px; background: #fff; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.025); }
+.source-figure-card.wide { grid-column: 1 / -1; }
+.source-figure-card img { width: 100%; display: block; background: #fff; border-bottom: 1px solid var(--line); }
+.source-figure-body { padding: 16px; }
+.source-figure-body h3 { margin-top: 0; font-size: 18px; }
+.source-figure-body p { margin-bottom: 10px; }
+.source-note { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.math-list { display: grid; gap: 16px; margin: 20px 0; }
+.math-card { border: 1px solid var(--line); border-radius: 20px; padding: 18px; background: linear-gradient(180deg, #fbfbff, #fff); }
+.math-card h3 { margin-top: 0; }
+.math-display { overflow-x: auto; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: #111; font-size: 17px; }
+.math-legend { display: grid; gap: 8px; margin: 12px 0 0; color: #333; }
+.math-legend div { border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.65; }
+.paper-rule-list { display: grid; gap: 12px; }
+.paper-rule-list li { background: #fbfbfb; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
 .claim-table { display: grid; gap: 12px; }
 .claim-row { display: grid; grid-template-columns: 1fr 1fr .7fr; gap: 12px; }
 .claim-row > div { border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: #fff; line-height: 1.65; }
@@ -115,7 +131,8 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.06
 .footer { border-top: 1px solid var(--line); padding: 34px 0; color: var(--muted); font-size: 14px; }
 
 @media (max-width: 900px) {
-  .grid.two, .grid.three, .stat-grid, .paper-card, .paper-layout { grid-template-columns: 1fr; }
+  .grid.two, .grid.three, .stat-grid, .paper-card, .paper-layout, .source-figure-grid { grid-template-columns: 1fr; }
+  .source-figure-card.wide { grid-column: auto; }
   .toc { position: static; }
   .nav-links { display: none; }
   .paper-section, .paper-hero { padding: 22px; }

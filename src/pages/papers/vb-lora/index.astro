@@ -1,6 +1,120 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
+const sourceFigures = [
+  {
+    id: '원문 그림 1 — 파라미터 효율 비교',
+    src: 'images/papers/vb-lora/figures/figure-1-parameter-efficiency.png',
+    caption: 'RoBERTa-Large에서 PEFT 방법들을 비교한 그림입니다. VB-LoRA는 더 적은 저장 파라미터로 더 높은 점수를 달성한다고 보고합니다.',
+    reading: 'x축은 저장 파라미터 수, y축은 성능 점수로 읽으면 됩니다. 핵심은 VB-LoRA가 “작은 저장량 영역”에 있으면서도 높은 점수 위치에 있다는 점입니다. 단, 이 그림은 해당 RoBERTa-Large/GLUE 설정의 결과이지 모든 태스크 보장은 아닙니다.'
+  },
+  {
+    id: '원문 그림 2 — VB-LoRA 구조',
+    src: 'images/papers/vb-lora/figures/figure-2-architecture.png',
+    wide: true,
+    caption: '왼쪽은 모델 파라미터가 vector bank의 벡터 조합으로 표현될 수 있음을 보여주고, 오른쪽은 top-k softmax로 k개 벡터를 골라 sub-vector를 만들고 이를 LoRA 파라미터 위치에 배치하는 구조를 보여줍니다.',
+    reading: '논문 방법의 핵심 그림입니다. “LoRA 행렬 전체를 저장”하는 대신, 같은 길이의 조각을 공용 벡터 뱅크에서 골라 섞는다는 점을 보면 됩니다.'
+  },
+  {
+    id: '원문 그림 3 — Top-k 선택 동역학',
+    src: 'images/papers/vb-lora/figures/figure-3-topk-training-dynamics.png',
+    wide: true,
+    caption: 'k=1, k=2, k=3, noisy top-2에서 학습 중 vector selection footprint가 어떻게 달라지는지 보여줍니다. x축은 sub-vector, y축은 vector bank에서 선택된 벡터 인덱스입니다.',
+    reading: 'k=1은 선택이 경직되기 쉽고, k=2/3은 더 많은 탐색이 보입니다. 절제 실험에서 top-2가 강한 이유를 직관적으로 보여주는 그림입니다.'
+  },
+  {
+    id: '원문 그림 4 — 초기 선택과 최종 선택',
+    src: 'images/papers/vb-lora/figures/figure-4-selection-init-final.png',
+    wide: true,
+    caption: '초기화 시점의 선택은 빨간색, 학습 종료 후 선택은 파란색, 겹치는 선택은 초록색으로 표시합니다.',
+    reading: '많은 sub-vector의 최종 선택이 초기 선택과 달라집니다. 즉 vector bank 선택이 고정된 라우팅이 아니라 downstream 학습 중 실제로 바뀌는 학습 대상임을 보여줍니다.'
+  },
+  {
+    id: '원문 그림 5 — 학습 구간별 선택 변화',
+    src: 'images/papers/vb-lora/figures/figure-5-top2-epoch.png',
+    caption: 'Top-2 설정에서 학습 시기별 vector selection footprint를 보여줍니다.',
+    reading: '초기 학습 단계에서 탐색이 가장 활발하고 후반으로 갈수록 업데이트가 희소해지는 패턴을 봅니다. 이 그림은 VB-LoRA의 선택 메커니즘이 초기에 공간을 탐색한 뒤 안정화된다는 저자 해석을 뒷받침합니다.'
+  },
+  {
+    id: '원문 그림 6 — 레이어 그룹별 벡터 사용',
+    src: 'images/papers/vb-lora/figures/figure-6-layer-usage.png',
+    caption: '각 vector bank 벡터의 top-k 가중치 합을 앞/중간/뒤 8개 레이어 그룹별로 묶어 보여줍니다.',
+    reading: '일부 벡터가 특정 깊이의 레이어에서 더 많이 쓰일 수 있음을 봅니다. 이는 vector bank가 완전히 균일하게 쓰이는 창고가 아니라, 레이어별 역할 분화가 생길 수 있음을 시사합니다.'
+  },
+  {
+    id: '원문 그림 7 — 모듈·행렬 유형별 벡터 사용',
+    src: 'images/papers/vb-lora/figures/figure-7-module-usage.png',
+    caption: 'query/value 모듈과 A/B 행렬 유형별로 vector bank 사용량을 묶어 보여줍니다.',
+    reading: '예를 들어 특정 벡터가 A 행렬이나 Query 모듈에서 두드러지게 사용될 수 있습니다. sub-vector 공유가 “모든 곳에 똑같이 공유”가 아니라 역할별 선택 패턴을 학습한다는 근거입니다.'
+  },
+  {
+    id: '원문 그림 8 — 벡터 사용 빈도 히스토그램',
+    src: 'images/papers/vb-lora/figures/figure-8-usage-histogram.png',
+    caption: 'Gemma-7B/MetaMathQA 설정에서 vector usage frequency가 대체로 정규분포처럼 퍼진다고 보고합니다.',
+    reading: 'MoE류 모델에서 흔한 load balancing 문제를 걱정할 수 있는데, 이 그림은 극단적으로 일부 벡터만 쓰이는 붕괴가 관찰되지 않았다는 보조 근거입니다.'
+  },
+  {
+    id: '원문 그림 9 — 벡터 뱅크와 sub-vector 시각화',
+    src: 'images/papers/vb-lora/figures/figure-9-subvectors-simplex.png',
+    caption: '학습된 vector bank와 sub-vector를 2차원으로 투영해 보여줍니다. sub-vector들이 vector bank가 이루는 simplex의 edge 근처에 배치되는 모습을 시각화합니다.',
+    reading: '수식으로는 top-k convex mixture인데, 그림으로 보면 sub-vector가 공용 벡터들 사이의 조합 공간에 놓인다는 직관을 얻을 수 있습니다.'
+  }
+];
+const mathNotes = [
+  {
+    id: '수식 1 — LoRA 업데이트의 저랭크 분해',
+    formula: String.raw`\[\Delta W = B A, \qquad B \in \mathbb{R}^{m \times r},\; A \in \mathbb{R}^{r \times n},\; r \ll \min(m,n)\]`,
+    explanation: ['LoRA는 원래 가중치 \(W_0\) 전체를 다시 학습하지 않고, 변화량 \(\Delta W\)만 작은 rank \(r\)의 두 행렬 곱으로 표현합니다.', '저장해야 하는 것은 전체 \(m \times n\) 행렬이 아니라 \(B\)와 \(A\)입니다. 그래서 저장량은 대략 \(r(m+n)\) 수준으로 줄어듭니다.']
+  },
+  {
+    id: '수식 2 — rank-one outer product 합으로 다시 보기',
+    formula: String.raw`\[\Delta W = B A = \sum_{k=1}^{r} b_k \otimes a_k = \sum_{k=1}^{r} \bigotimes_{i=1}^{2} v_k^{(i)},\quad v_k^{(1)}=b_k,\; v_k^{(2)}=a_k\]`,
+    explanation: ['VB-LoRA의 출발점입니다. LoRA 행렬 곱을 rank별 outer product들의 합으로 풀어 쓰면, 각 rank component는 두 벡터 \(b_k\), \(a_k\)의 조합으로 볼 수 있습니다.', '이렇게 벡터 단위로 보면 다음 단계에서 벡터를 더 작은 sub-vector로 자를 수 있습니다. 즉 “행렬 공유”가 아니라 “벡터 조각 공유”로 내려가는 발판입니다.']
+  },
+  {
+    id: '수식 3 — component vector를 sub-vector로 나누기',
+    formula: String.raw`\[v_k^{(i)} = \operatorname{concat}\left(u_{k,1}^{(i)}, u_{k,2}^{(i)}, \ldots, u_{k,d_i'}^{(i)}\right),\qquad u_{k,j}^{(i)} \in \mathbb{R}^{b},\quad d_i'=d_i/b\]`,
+    explanation: ['길이가 서로 다른 LoRA 벡터들을 바로 공유하기는 어렵습니다. 그래서 공통 길이 \(b\)의 sub-vector로 잘라 모두 같은 형식으로 맞춥니다.', '여기서 \(b\)는 sub-vector 길이입니다. 논문 절제 실험에서는 \(b=256\)이 CoLA 설정에서 가장 좋았습니다.']
+  },
+  {
+    id: '수식 4 — vector bank의 top-k 혼합',
+    formula: String.raw`\[u = \sum_{s=1}^{h} w_s(\sigma)\alpha_s,\qquad w(\sigma)=\operatorname{Softmax}(\operatorname{TopK}(\sigma,k))\]`,
+    explanation: ['각 sub-vector \(u\)는 vector bank \(\mathcal{B}=\{\alpha_1,\ldots,\alpha_h\}\)에 있는 기본 벡터들의 가중합으로 만들어집니다.', 'TopK는 로짓 \(\sigma\) 중 큰 \(k\)개만 남기고 나머지는 \(-\infty\)로 보내 softmax 후 가중치가 0이 되게 합니다. 그래서 모든 벡터를 섞는 것이 아니라 소수 \(k\)개만 희소하게 섞습니다.']
+  },
+  {
+    id: '수식 5 — 저장 파라미터 triplet',
+    formula: String.raw`\[\Theta = \{\mathcal{B},\mathcal{I},\mathcal{V}\},\quad \mathcal{B}\in\mathbb{R}^{h\times b},\; \mathcal{I}\in\mathbb{R}^{2\times L\times M\times r\times(d/b)\times k},\; \mathcal{V}\in\mathbb{R}^{2\times L\times M\times r\times(d/b)\times(k-1)}\]`,
+    explanation: ['학습 중에는 전체 로짓 \(\sigma\)가 필요하지만, 저장할 때는 선택된 인덱스 \(\mathcal{I}\)와 혼합 가중치 \(\mathcal{V}\), 그리고 공유 vector bank \(\mathcal{B}\)만 남길 수 있습니다.', '가중치가 \(k\)개인데 자유도는 \(k-1\)인 이유는 softmax 혼합 가중치의 합이 1이기 때문입니다. 마지막 하나는 나머지 값으로 결정됩니다.']
+  },
+  {
+    id: '수식 6 — k=2, uint8 인덱스일 때 저장량',
+    formula: String.raw`\[\#\text{stored params}_{\text{VB-LoRA}} \approx h b + 3 L M r(d/b)\]`,
+    explanation: ['첫 항 \(hb\)는 공유 vector bank 자체입니다. 두 번째 항은 각 sub-vector가 선택한 인덱스와 혼합 가중치를 저장하는 비용입니다.', '논문의 요지는 두 번째 항의 계수 \(3r/b\)가 작다는 점입니다. 예를 들어 \(r=4, b=256\)이면 계수가 약 0.047이라, LoRA의 \(2r=8\)보다 훨씬 작습니다.']
+  },
+  {
+    id: '수식 7 — forward 계산에서 ΔW를 명시적으로 만들지 않기',
+    formula: String.raw`\[xW_0 + x\Delta W = xW_0 + xBA = xW_0 + (xB)A\]`,
+    explanation: ['Algorithm 1의 계산 직관입니다. \(\Delta W=BA\)를 큰 행렬로 먼저 만들지 않고, \((xB)A\) 순서로 계산하면 메모리를 줄일 수 있습니다.', '이 부분은 추론 비용을 크게 늘리지 않기 위한 구현상 핵심입니다. 논문은 LoRA처럼 원래 모델 파라미터에 merge할 수 있으므로 inference overhead가 없다고 설명합니다.']
+  }
+];
+const figureIndex = [
+  ['원문 그림 1', 'RoBERTa-Large에서 PEFT 방법의 저장 파라미터 대비 성능 비교', 'VB-LoRA의 저장량 장점을 가장 직관적으로 보여줌', '해당 실험 설정 기준'],
+  ['원문 그림 2', 'vector bank 공유와 top-k admixture 기반 VB-LoRA 구조', '논문 방법의 핵심 구조', '기존 LoRA를 사후 무손실 압축한다는 뜻은 아님'],
+  ['원문 그림 3', 'k=1,2,3 및 noisy top-2의 vector selection footprint', '왜 k=2가 잘 작동하는지 직관 제공', 'CoLA/RoBERTa-large 설정 기준'],
+  ['원문 그림 4', '초기 선택과 최종 선택 비교', '선택 로짓이 학습 중 실제로 바뀜을 보여줌', '시각화용 축약 설정'],
+  ['원문 그림 5', '학습 구간별 vector selection footprint', '초기 탐색 후 후반 안정화 패턴', 'Top-2 설정 기준'],
+  ['원문 그림 6', '레이어 그룹별 vector bank 사용량', '일부 벡터의 레이어별 역할 분화 가능성', 'RoBERTa/CoLA 시각화'],
+  ['원문 그림 7', 'query/value 모듈 및 A/B 행렬별 사용량', '모듈·행렬 유형별 선택 패턴 확인', '사용량이 성능 원인을 완전히 설명하진 않음'],
+  ['원문 그림 8', 'Gemma-7B vector usage histogram', 'load balancing 붕괴가 심하지 않다는 보조 근거', '정규분포처럼 보인다는 관찰'],
+  ['원문 그림 9', 'vector bank와 sub-vector의 2D 투영', 'top-k convex mixture 직관 제공', 't-SNE 투영은 거리 해석에 주의'],
+  ['표 1', 'RoBERTa base/large GLUE 결과', 'VB-LoRA가 적은 저장량으로 경쟁력 있는 평균 성능을 보임', '일부 baseline은 원 논문 수치, 일부는 저자 구현'],
+  ['표 2', 'GPT-2 E2E 자연어 생성 결과', '생성 태스크에서도 저장량 절감 확인', 'VeRA와 비슷한 성능, 모든 지표에서 압도는 아님'],
+  ['표 3', 'Llama 2 MT-Bench instruction tuning 결과', '0.8M/1.1M 저장 파라미터로 LoRA 대비 큰 절감', 'GPT-4 평가 모델 변화 가능성을 저자도 언급'],
+  ['표 4', 'Mistral/Gemma 수학 추론 결과', 'GSM8K에서 강하고 저장량이 작음', 'MATH에서는 LoRA가 더 높은 설정도 있음'],
+  ['수식 1', 'LoRA 업데이트 \(\Delta W=BA\)', 'VB-LoRA가 압축/재구성하려는 기본 대상', '전체 fine-tuning과 구분'],
+  ['수식 4', 'sub-vector의 vector bank top-k 혼합', 'VB-LoRA의 share 단계 핵심', '저장 시 로짓 전체가 아니라 선택 인덱스/가중치만 남김'],
+  ['수식 6', '저장량 \(hb+3LMr(d/b)\)', '왜 저장 파라미터가 극단적으로 줄어드는지 설명', 'k=2와 uint8 인덱스 가정']
+];
 ---
 <BaseLayout title="VB-LoRA — 벡터 뱅크 기반 초고효율 LoRA 해설" description="VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks 논문을 초록부터 부록까지 한국어로 따라 읽는 전체 흐름 해설.">
   <main class="site-shell paper-layout">
@@ -15,7 +129,9 @@ const base = import.meta.env.BASE_URL;
       <a href="#ablation">4.5 절제 실험</a>
       <a href="#conclusion">5. 결론·한계</a>
       <a href="#appendix">부록</a>
-      <a href="#figures">그림/표</a>
+      <a href="#source-figures">원문 그림</a>
+      <a href="#equations">수식 해설</a>
+      <a href="#figures">그림·표·수식</a>
       <a href="#reading">내 해석</a>
     </aside>
 
@@ -24,6 +140,7 @@ const base = import.meta.env.BASE_URL;
         <span class="kicker">전체 흐름 해설 · arXiv:2405.15179v3</span>
         <h1>VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법</h1>
         <p class="original-title">원제: VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks</p>
+        <p class="source-note">한국어 우선 해설입니다. 원문 식별을 위해 논문 제목·모델명·벤치마크명·핵심 기술어는 필요한 곳에서만 영어를 함께 남깁니다.</p>
         <p class="subtitle">
           이 논문은 LoRA의 A/B 저랭크 행렬을 그대로 저장하지 않고, 같은 길이의 부분 벡터로 쪼갠 뒤 전역 공유 <strong>vector bank</strong>에서 top-k로 골라 섞어 재구성하는 방법을 제안합니다. 목표는 개인별·태스크별 LLM 커스터마이징이 많아질 때 어댑터 저장/전송 비용을 극단적으로 줄이는 것입니다.
         </p>
@@ -51,7 +168,7 @@ const base = import.meta.env.BASE_URL;
           <div class="stat"><strong>88.5</strong><span>RoBERTa-large GLUE 평균, VB-LoRA_all</span></div>
           <div class="stat"><strong>k=2</strong><span>CoLA 절제 실험에서 가장 좋은 top-k 설정</span></div>
         </div>
-        <h3>TL;DR</h3>
+        <h3>핵심 요약</h3>
         <p>
           VB-LoRA는 “각 레이어/모듈마다 LoRA A/B를 따로 저장한다”는 구조를 깨고, A/B를 작은 부분 벡터로 나눈 다음 전역 벡터 뱅크의 조합으로 표현합니다. 학습 중에는 벡터 뱅크와 top-k 선택 로짓을 최적화하고, 저장 시에는 벡터 뱅크·선택 인덱스·혼합 가중치만 남깁니다. 논문은 GLUE, E2E, instruction tuning, 수학 추론에서 기존 PEFT와 비슷하거나 더 나은 성능을 더 적은 저장 파라미터로 얻었다고 보고합니다.
         </p>
@@ -79,7 +196,7 @@ const base = import.meta.env.BASE_URL;
           하지만 저자들은 기존 LoRA 계열이 여전히 두 가지 경계에 갇혀 있다고 봅니다. 첫째, 각 모듈·레이어 안의 로컬 행렬 단위에서 주로 생각합니다. 둘째, A와 B라는 원래 행렬 차원만 다룹니다. VB-LoRA는 이 경계를 깨고 rank-one component vector를 다시 부분 벡터로 나누어, 레이어·모듈·행렬 종류를 넘어 공유 가능한 표현으로 만듭니다.
         </p>
         <p>
-          Figure 1은 VB-LoRA의 큰 그림입니다. 왼쪽은 여러 모델 파라미터가 하나의 vector bank에서 나온 벡터 조합으로 표현될 수 있음을 보여주고, 오른쪽은 top-k softmax가 벡터 뱅크에서 k개 벡터를 고른 뒤 sub-vector를 만들고, 이 sub-vector들이 LoRA 파라미터의 원하는 위치에 배치되는 구조를 보여줍니다.
+          그림 2는 VB-LoRA의 큰 그림입니다. 왼쪽은 여러 모델 파라미터가 하나의 vector bank에서 나온 벡터 조합으로 표현될 수 있음을 보여주고, 오른쪽은 top-k softmax가 벡터 뱅크에서 k개 벡터를 고른 뒤 sub-vector를 만들고, 이 sub-vector들이 LoRA 파라미터의 원하는 위치에 배치되는 구조를 보여줍니다.
         </p>
         <ul>
           <li><strong>기여 1:</strong> 행렬 차원·모듈·레이어를 가로지르는 global vector bank 기반 divide-and-share 패러다임.</li>
@@ -137,28 +254,28 @@ const base = import.meta.env.BASE_URL;
           RoBERTa-base와 RoBERTa-large에서 CoLA, SST-2, MRPC, STS-B, QNLI, RTE를 평가합니다. VB-LoRA_qv는 query/value만, VB-LoRA_all은 query/key/value/output과 FFN up/down까지 모든 선형 모듈을 fine-tune합니다. vector bank는 길이 256 벡터 90개, rank 4, k=2가 기본입니다.
         </p>
         <p>
-          Table 1에서 RoBERTa-large의 VB-LoRA_all은 0.033M 저장 파라미터로 평균 88.5를 기록합니다. 같은 all 설정의 VeRA는 0.258M, Tied-LoRA는 0.239M입니다. 저자들은 특히 all-module fine-tuning이 성능에 유리하지만 기존 방법은 파라미터 수가 크게 늘어나는 반면, VB-LoRA는 같은 vector bank를 유지하면서 인덱스/가중치만 늘어 상대 증가폭이 작다고 해석합니다.
+          표 1에서 RoBERTa-large의 VB-LoRA_all은 0.033M 저장 파라미터로 평균 88.5를 기록합니다. 같은 all 설정의 VeRA는 0.258M, Tied-LoRA는 0.239M입니다. 저자들은 특히 all-module fine-tuning이 성능에 유리하지만 기존 방법은 파라미터 수가 크게 늘어나는 반면, VB-LoRA는 같은 vector bank를 유지하면서 인덱스/가중치만 늘어 상대 증가폭이 작다고 해석합니다.
         </p>
         <h3>4.2 자연어 생성: E2E</h3>
         <p>
-          GPT-2 Medium/Large를 E2E restaurant dataset으로 fine-tune합니다. Table 2에서 VB-LoRA는 GPT-2 Medium 기준 0.076M, GPT-2 Large 기준 0.13M 저장 파라미터로 VeRA보다 약 20% 적은 저장량을 쓰면서 BLEU, NIST, METEOR, ROUGE-L, CIDEr에서 경쟁력 있는 성능을 보입니다.
+          GPT-2 Medium/Large를 E2E restaurant dataset으로 fine-tune합니다. 표 2에서 VB-LoRA는 GPT-2 Medium 기준 0.076M, GPT-2 Large 기준 0.13M 저장 파라미터로 VeRA보다 약 20% 적은 저장량을 쓰면서 BLEU, NIST, METEOR, ROUGE-L, CIDEr에서 경쟁력 있는 성능을 보입니다.
         </p>
-        <h3>4.3 Instruction tuning</h3>
+        <h3>4.3 명령어 튜닝(Instruction tuning)</h3>
         <p>
-          Llama 2 7B와 13B를 QLoRA framework 안에서 Cleaned Alpaca Dataset으로 1 epoch fine-tune하고, MT-Bench 첫 턴 점수를 GPT-4로 평가합니다. Table 3에서 VB-LoRA는 Llama 2 7B에서 0.8M 저장 파라미터와 점수 5.71, Llama 2 13B에서 1.1M 저장 파라미터와 점수 6.31을 보고합니다. 논문은 각각 LoRA 저장량의 0.5%, 0.4%만 사용한다고 강조합니다.
+          Llama 2 7B와 13B를 QLoRA framework 안에서 Cleaned Alpaca Dataset으로 1 epoch fine-tune하고, MT-Bench 첫 턴 점수를 GPT-4로 평가합니다. 표 3에서 VB-LoRA는 Llama 2 7B에서 0.8M 저장 파라미터와 점수 5.71, Llama 2 13B에서 1.1M 저장 파라미터와 점수 6.31을 보고합니다. 논문은 각각 LoRA 저장량의 0.5%, 0.4%만 사용한다고 강조합니다.
         </p>
         <h3>4.4 수학 추론</h3>
         <p>
-          Mistral-7B-v0.1과 Gemma-7B를 MetaMathQA로 fine-tune하고 GSM8K와 MATH에서 평가합니다. Table 4에서 Mistral-7B VB-LoRA는 0.65M 저장 파라미터로 GSM8K 69.22, MATH 17.90을 기록합니다. Gemma-7B에서는 0.67M으로 GSM8K 75.96, MATH 28.90입니다. MATH에서는 LoRA가 더 높지만, GSM8K와 저장량 측면에서는 VB-LoRA의 장점이 두드러집니다.</p>
+          Mistral-7B-v0.1과 Gemma-7B를 MetaMathQA로 fine-tune하고 GSM8K와 MATH에서 평가합니다. 표 4에서 Mistral-7B VB-LoRA는 0.65M 저장 파라미터로 GSM8K 69.22, MATH 17.90을 기록합니다. Gemma-7B에서는 0.67M으로 GSM8K 75.96, MATH 28.90입니다. MATH에서는 LoRA가 더 높지만, GSM8K와 저장량 측면에서는 VB-LoRA의 장점이 두드러집니다.</p>
       </section>
 
       <section class="paper-section" id="ablation">
         <h2>4.5 절제 실험</h2>
         <p>
-          절제 실험은 RoBERTa-large에서 query/value만 fine-tune하며 진행합니다. Table 5는 vector selection 방법을 비교합니다. Top-k 중에서는 Top-2 softmax가 CoLA 68.3으로 가장 좋고, Top-1은 66.9, Top-3은 68.1입니다. Noisy Top-k, Gumbel-Softmax, Straight-Through Gumbel-Softmax는 크게 낮게 나옵니다. 저자들은 random noise가 vector bank 학습을 불안정하게 만들 수 있다고 해석합니다.
+          절제 실험은 RoBERTa-large에서 query/value만 fine-tune하며 진행합니다. 표 5는 vector selection 방법을 비교합니다. Top-k 중에서는 Top-2 softmax가 CoLA 68.3으로 가장 좋고, Top-1은 66.9, Top-3은 68.1입니다. Noisy Top-k, Gumbel-Softmax, Straight-Through Gumbel-Softmax는 크게 낮게 나옵니다. 저자들은 random noise가 vector bank 학습을 불안정하게 만들 수 있다고 해석합니다.
         </p>
         <p>
-          Table 6은 sub-vector 길이 b를 비교합니다. b=128, 256, 512, 1024 중 b=256이 CoLA 68.7로 가장 좋습니다. 너무 작으면 선택 문제가 복잡해지고, 너무 크면 vector bank의 specialization이 약해질 수 있다는 설명입니다. Figure 2는 k=1일 때 선택 벡터가 거의 바뀌지 않는 반면, k>1에서는 초기 학습 단계에서 vector exploration이 활발함을 보여줍니다.
+          표 6은 sub-vector 길이 b를 비교합니다. b=128, 256, 512, 1024 중 b=256이 CoLA 68.7로 가장 좋습니다. 너무 작으면 선택 문제가 복잡해지고, 너무 크면 vector bank의 specialization이 약해질 수 있다는 설명입니다. 그림 3은 k=1일 때 선택 벡터가 거의 바뀌지 않는 반면, k>1에서는 초기 학습 단계에서 vector exploration이 활발함을 보여줍니다.
         </p>
       </section>
 
@@ -168,7 +285,7 @@ const base = import.meta.env.BASE_URL;
           결론은 VB-LoRA가 “divide-and-share”와 differentiable top-k admixture module을 통해 state-of-the-art PEFT 대비 훨씬 적은 저장 파라미터로 경쟁력 있는 성능을 낸다고 요약합니다. 저자들은 이 구조가 LoRA뿐 아니라 inserted adapter, prompt tuning, BitFit 등 다른 PEFT 방식으로도 확장될 수 있다고 봅니다.
         </p>
         <p>
-          한계도 분명히 제시합니다. 실험은 text-only, monolingual English, LoRA-only setting에 제한됩니다. 또한 vector bank 크기와 vector length의 탐색 범위도 제한적입니다. broader impact 측면에서는 adapter 저장/전송 비용을 줄여 개인화 LLM 접근성을 높일 수 있지만, LLM 일반 위험 외의 별도 부정적 사회 영향은 예상하지 않는다고 적습니다.
+          한계도 분명히 제시합니다. 실험은 텍스트 전용(text-only), 영어 단일언어(monolingual English), LoRA 전용 설정(LoRA-only setting)에 제한됩니다. 또한 vector bank 크기와 vector length의 탐색 범위도 제한적입니다. broader impact(사회적 영향) 측면에서는 adapter 저장/전송 비용을 줄여 개인화 LLM 접근성을 높일 수 있지만, LLM 일반 위험 외의 별도 부정적 사회 영향은 예상하지 않는다고 적습니다.
         </p>
       </section>
 
@@ -176,32 +293,63 @@ const base = import.meta.env.BASE_URL;
         <h2>부록</h2>
         <h3>하이퍼파라미터와 계산 자원</h3>
         <p>
-          Appendix A는 GLUE, NLG, instruction tuning hyperparameter와 계산 자원을 제공합니다. 모든 실험은 8×A100 80GB에서 수행됩니다. 계산 overhead에 대해서는 sub-vector decomposition 때문에 training time overhead가 생기지만 inference에는 영향을 주지 않는다고 설명합니다. LoRA와 VB-LoRA 모두 추론 시 원래 모델 파라미터에 merge할 수 있기 때문입니다.
+          부록 A는 GLUE, NLG, instruction tuning 하이퍼파라미터와 계산 자원을 제공합니다. 모든 실험은 8×A100 80GB에서 수행됩니다. 계산 overhead에 대해서는 sub-vector decomposition 때문에 training time overhead가 생기지만 inference에는 영향을 주지 않는다고 설명합니다. LoRA와 VB-LoRA 모두 추론 시 원래 모델 파라미터에 merge할 수 있기 때문입니다.
         </p>
         <p>
           메모리 효율 측면에서는 VB-LoRA가 training time을 약 15–20% 더 쓰는 대신 LoRA보다 메모리를 덜 소비한다고 설명합니다. 이 부분은 “저장 파라미터가 적다”와 “훈련 시간이 항상 더 빠르다”를 구분해야 하는 지점입니다.</p>
         <h3>벡터 선택 시각화</h3>
         <p>
-          Appendix B는 vector selection이 학습 중 어떻게 변하는지 보여줍니다. Figure 3은 초기 선택과 최종 선택이 많이 달라짐을 보여주고, Figure 4는 탐색이 주로 초기 학습에 일어나며 후반에는 update가 sparse해진다는 점을 보여줍니다. Figure 5와 6은 특정 벡터가 깊은 레이어나 특정 모듈/행렬 유형에서 더 많이 사용될 수 있음을 보여줍니다. Figure 7은 Gemma-7B에서 vector usage가 대체로 정상분포처럼 퍼진다고 보고합니다.
+          부록 B는 vector selection이 학습 중 어떻게 변하는지 보여줍니다. 그림 4는 초기 선택과 최종 선택이 많이 달라짐을 보여주고, 그림 5는 탐색이 주로 초기 학습에 일어나며 후반에는 update가 sparse해진다는 점을 보여줍니다. 그림 6과 7은 특정 벡터가 깊은 레이어나 특정 모듈/행렬 유형에서 더 많이 사용될 수 있음을 보여줍니다. 그림 8은 Gemma-7B에서 vector usage가 대체로 정상분포처럼 퍼진다고 보고합니다.
         </p>
-        <h3>Instruction tuning 예시</h3>
+        <h3>명령어 튜닝(Instruction tuning) 예시</h3>
         <p>
           마지막 부록은 LoRA와 VB-LoRA로 fine-tune한 Llama 2 13B의 답변 예시를 제공합니다. 이는 정량 점수만으로는 보이지 않는 응답 품질을 보여주려는 보조 자료입니다.</p>
       </section>
 
+      <section class="paper-section" id="source-figures">
+        <h2>원문 그림 따로 보기</h2>
+        <p>
+          아래는 VB-LoRA 논문의 원문 그림를 번호별로 따로 추출해 넣은 섹션입니다. 위의 imggen high 인포그래픽은 이해를 돕는 재구성 그림이고, 여기서는 원문 그림 자체와 한국어 해설을 함께 확인합니다.
+        </p>
+        <div class="source-figure-grid">
+          {sourceFigures.map((figure) => (
+            <figure class={figure.wide ? 'source-figure-card wide' : 'source-figure-card'}>
+              <img src={`${base}${figure.src}`} alt={`${figure.id} — 원문 그림`} loading="lazy" />
+              <figcaption class="source-figure-body">
+                <h3>{figure.id}</h3>
+                <p><strong>원문 캡션 한국어 번역:</strong> {figure.caption}</p>
+                <p><strong>읽는 법:</strong> {figure.reading}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <p class="source-note">출처: arXiv:2405.15179v3 LaTeX source/PDF의 원문 그림. 논문 이해와 비평 목적의 인용·해설용으로 번호와 의미를 보존했습니다.</p>
+      </section>
+
+      <section class="paper-section" id="equations">
+        <h2>핵심 수식 LaTeX 해설</h2>
+        <p>
+          VB-LoRA는 수식 구조가 중요한 논문이라, 본문에서 지나간 핵심 수식을 따로 모아 LaTeX로 표시하고 각 기호의 의미와 직관을 풀었습니다.
+        </p>
+        <div class="math-list">
+          {mathNotes.map((item) => (
+            <article class="math-card">
+              <h3>{item.id}</h3>
+              <div class="math-display" set:html={item.formula}></div>
+              <div class="math-legend">
+                {item.explanation.map((text) => <div>{text}</div>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section class="paper-section" id="figures">
-        <h2>그림/표/수식 인덱스</h2>
+        <h2>그림·표·수식 인덱스</h2>
         <table class="metric-table">
           <thead><tr><th>ID</th><th>무엇을 보여주나</th><th>왜 중요한가</th><th>주의점</th></tr></thead>
           <tbody>
-            <tr><td>Figure 1</td><td>vector bank 공유와 top-k admixture 기반 VB-LoRA 구조</td><td>논문 방법의 핵심 그림</td><td>기존 LoRA를 사후 무손실 압축한다는 뜻은 아님</td></tr>
-            <tr><td>Figure 2</td><td>k=1,2,3 및 noisy top-2의 vector selection footprint</td><td>왜 k=2가 잘 작동하는지 직관 제공</td><td>CoLA/RoBERTa-large 설정 기준</td></tr>
-            <tr><td>Table 1</td><td>RoBERTa base/large GLUE 결과</td><td>VB-LoRA가 적은 저장량으로 경쟁력 있는 평균 성능을 보임</td><td>일부 baseline은 원 논문 수치, 일부는 저자 구현</td></tr>
-            <tr><td>Table 2</td><td>GPT-2 E2E 자연어 생성 결과</td><td>생성 태스크에서도 저장량 절감 확인</td><td>VeRA와 비슷한 성능, 모든 지표에서 압도는 아님</td></tr>
-            <tr><td>Table 3</td><td>Llama 2 MT-Bench instruction tuning 결과</td><td>0.8M/1.1M 저장 파라미터로 LoRA 대비 큰 절감</td><td>GPT-4 평가 모델 변화 가능성을 저자도 언급</td></tr>
-            <tr><td>Table 4</td><td>Mistral/Gemma 수학 추론 결과</td><td>GSM8K에서 강하고 저장량이 작음</td><td>MATH에서는 LoRA가 더 높은 설정도 있음</td></tr>
-            <tr><td>Eq. 1</td><td>ΔW = BA = rank-one vector outer product 합</td><td>Divide 단계의 출발점</td><td>표기보다 개념: A/B를 부분 벡터로 나눌 수 있게 보는 것</td></tr>
-            <tr><td>Eq. 2</td><td>sub-vector를 vector bank의 top-k softmax 혼합으로 표현</td><td>Share 단계의 핵심</td><td>저장 시 로짓 전체가 아니라 선택 인덱스/가중치만 남김</td></tr>
+            {figureIndex.map(([id, what, why, caution]) => <tr><td>{id}</td><td>{what}</td><td>{why}</td><td>{caution}</td></tr>)}
           </tbody>
         </table>
       </section>

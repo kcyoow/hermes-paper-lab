@@ -16,13 +16,111 @@ const figureIndex = [
   ['그림 2', '페르소나를 상세 사용자 프로필, 파일시스템 계획, 산출물로 확장하는 합성 컴퓨터 생성 파이프라인'],
   ['그림 3', '생성된 산출물 예시: VCMM 워크북 및 Capital Markets Outlook PDF'],
   ['그림 4–5', '1,000개 페르소나의 직업 분포 및 합성 컴퓨터 산출물 유형 분포'],
+  ['그림 6', '채점 기준 대비 점수 분포: 컴퓨터 단위와 산출물 단위 모두 개선 여지를 보임'],
+  ['그림 7', '학습용 합성 컴퓨터 수 N이 커질수록 스킬 제공 에이전트의 승률이 높아지는 추세'],
+  ['그림 8', 'GDPVal 외부 영역 전이 결과: Sonnet에서 105승 대 67패'],
+  ['그림 9', '시뮬레이션 → 회고 신호 → 스킬 → 모델 개선으로 이어지는 자기개선 루프'],
   ['표 1', '시뮬레이션 전후 컴퓨터 통계: 파일 111.6 → 197.4, 디렉터리 30.4 → 36.0'],
   ['표 2', 'DOCX/XLSX/PPTX/PDF 등 산출물 파일 크기; 빈 자리표시자가 아니라 내용이 채워진 파일임을 보여줌'],
   ['표 3', '평균 2,272턴, 8.59시간, 협업자 5.5명, 소통 31회'],
   ['표 4', '직업별 스킬의 동일 영역 개선: 61.6% → 68.6%, +7.0%p'],
   ['표 5', 'GDPVal과 비교: 더 많은 파일, 산출물, 턴, 실행 시간을 요구하는 설정'],
-  ['그림 8', 'GDPVal 외부 영역 전이 결과: Sonnet에서 105승 대 67패'],
-  ['그림 9', '시뮬레이션 → 회고 신호 → 스킬 → 모델 개선으로 이어지는 자기개선 루프']
+  ['계산식 1', '평균 전체 턴 = 주간 계획 턴 + 일일 실행 턴 = 63 + 2,209 = 2,272'],
+  ['계산식 2', '동일 영역 평가 개선폭 = 68.6% − 61.6% = +7.0%p'],
+  ['계산식 3', 'GDPVal sign test는 105승/67패의 동률 제외 비교에 대해 유의성을 보고']
+];
+const sourceFigures = [
+  {
+    id: '원문 그림 1',
+    src: 'images/papers/synthetic-computers/figures/figure-1-overview.png',
+    wide: true,
+    caption: '방법론 전체 개요. 페르소나에서 사용자별 합성 컴퓨터를 만들고, 그 환경 위에서 장기 생산성 시뮬레이션을 실행해 산출물과 과정 신호를 얻는 흐름입니다.',
+    reading: '이 그림은 논문의 “왜 컴퓨터 환경까지 합성해야 하는가”를 한 번에 보여줍니다. 단순 프롬프트/태스크 생성이 아니라 파일시스템과 업무 맥락을 먼저 만들고, 그 안에서 에이전트를 굴린다는 점이 핵심입니다.'
+  },
+  {
+    id: '원문 그림 2',
+    src: 'images/papers/synthetic-computers/figures/figure-2-creation-pipeline.png',
+    wide: true,
+    caption: '합성 컴퓨터 생성 파이프라인. 페르소나를 상세 사용자 프로필로 확장한 뒤, 파일시스템 계획과 산출물 관계를 만들고 실제 파일을 채웁니다.',
+    reading: '읽는 순서는 왼쪽에서 오른쪽입니다. 페르소나가 바로 파일 목록이 되는 것이 아니라, 업무 습관·폴더 규칙·산출물 의존관계를 거쳐 “컴퓨터처럼 보이는 상태”로 구체화됩니다.'
+  },
+  {
+    id: '원문 그림 3',
+    src: 'images/papers/synthetic-computers/figures/figure-3-artifacts.png',
+    wide: true,
+    caption: '합성 컴퓨터 안에 실제로 생성된 산출물 스크린샷. VCMM 워크북과 Capital Markets Outlook PDF 예시입니다.',
+    reading: '이 그림은 합성 파일이 빈 더미가 아니라 내용과 형식을 가진 업무 산출물이라는 주장을 뒷받침합니다. 다만 사실 정확성은 생성 파이프라인 품질에 의존합니다.'
+  },
+  {
+    id: '원문 그림 4',
+    src: 'images/papers/synthetic-computers/figures/figure-4-occupation-distribution.png',
+    caption: '1,000개 샘플 페르소나의 직업 분포입니다.',
+    reading: '합성 컴퓨터가 특정 직업 하나에만 몰린 것이 아니라 여러 생산성 직군을 포괄하려 했다는 규모 근거입니다.'
+  },
+  {
+    id: '원문 그림 5',
+    src: 'images/papers/synthetic-computers/figures/figure-5-artifact-type-distribution.png',
+    caption: '합성 컴퓨터 파일 유형 분포입니다.',
+    reading: 'DOCX, XLSX, PDF, PPTX 같은 생산성 파일이 중심이라는 점을 확인할 수 있습니다. 이 논문이 일반 텍스트 태스크보다 오피스 산출물 중심이라는 신호입니다.'
+  },
+  {
+    id: '원문 그림 6a',
+    src: 'images/papers/synthetic-computers/figures/figure-6-score-per-computer.png',
+    caption: '채점 기준 대비 컴퓨터 단위 aggregate 점수 분포입니다.',
+    reading: '대부분 완전 실패가 아니라 60–80% 근처에 분포합니다. 즉 장기 작업은 어느 정도 수행하지만, 아직 개선 신호가 충분히 남는 난이도입니다.'
+  },
+  {
+    id: '원문 그림 6b',
+    src: 'images/papers/synthetic-computers/figures/figure-6-score-per-deliverable.png',
+    caption: '채점 기준 대비 산출물 단위 점수 분포입니다.',
+    reading: '컴퓨터 전체 평균만 보면 숨는 산출물별 품질 편차를 보여줍니다. 스킬 추출은 이런 실패 유형을 세분화해 잡아내야 합니다.'
+  },
+  {
+    id: '원문 그림 7',
+    src: 'images/papers/synthetic-computers/figures/figure-7-skill-scaling.png',
+    caption: '학습용 컴퓨터 수 N이 늘어날 때 스킬 제공 에이전트가 기준선 대비 이기는 비율입니다.',
+    reading: '합성 경험이 많아질수록 직업별 스킬이 더 좋아지는지 보는 핵심 figure입니다. 단, 이는 모델 가중치 업데이트가 아니라 추출된 스킬을 프롬프트/도구처럼 제공한 결과입니다.'
+  },
+  {
+    id: '원문 그림 8',
+    src: 'images/papers/synthetic-computers/figures/figure-8-gdpval-transfer.png',
+    caption: 'GDPVal gold set 220개 작업에 대한 외부 영역 평가입니다.',
+    reading: '합성 컴퓨터에서 만든 스킬이 외부 생산성 벤치마크에도 전이되는지 보여주는 그림입니다. 승/패 외에 동률 또는 판정 제외 케이스가 있을 수 있어 105+67이 220과 같지는 않습니다.'
+  },
+  {
+    id: '원문 그림 9',
+    src: 'images/papers/synthetic-computers/figures/figure-9-self-improving-loop.png',
+    wide: true,
+    caption: '생산성 에이전트 자기개선 루프. 시뮬레이션 → 경험 신호 → 스킬 → 행동 개선 → 가능한 모델 업데이트로 이어집니다.',
+    reading: 'Hermes 관점에서 가장 중요한 그림입니다. 합성 장기 작업 로그를 사람이 읽을 수 있는 스킬로 만들고, 그 스킬이 다시 에이전트 행동을 개선하는 루프를 제안합니다.'
+  }
+];
+const mathNotes = [
+  {
+    id: '계산식 1 — 평균 전체 턴 수',
+    formula: String.raw`\[\text{전체 턴 평균} = \text{주간 계획 턴} + \text{일일 실행 턴} = 63 + 2{,}209 = 2{,}272\]`,
+    explanation: ['표 3의 평균값을 읽는 가장 단순한 방식입니다. 한 실행이 짧은 QA가 아니라 주간 계획과 일일 실행으로 나뉜 장기 에이전트 궤적이라는 뜻입니다.', '여기서 “턴”은 사용자와 모델이 한 번 묻고 답한 단순 채팅 수가 아니라 Claude Code SDK 기반 작업 에이전트가 파일 탐색·수정·협업 메시지 등을 수행하며 남긴 상호작용 단위로 이해해야 합니다.']
+  },
+  {
+    id: '계산식 2 — 동일 영역 스킬 개선폭',
+    formula: String.raw`\[\Delta_{\text{skill}} = 68.6\% - 61.6\% = 7.0\text{ percentage points}\]`,
+    explanation: ['표 4의 핵심 수치입니다. 기준선 평균 점수 61.6%와 스킬 제공 조건 68.6%의 차이는 7.0%p입니다.', '주의할 점은 7.0% “상대 증가율”이 아니라 percentage point 차이라는 것입니다. 상대 증가율로 바꾸면 \((68.6-61.6)/61.6\)처럼 다른 값이 됩니다.']
+  },
+  {
+    id: '계산식 3 — 학습/검증 분할',
+    formula: String.raw`\[1{,}000\;\text{synthetic computers} = 900_{\text{스킬 추출용}} + 100_{\text{검증용}}\]`,
+    explanation: ['논문은 1,000개 합성 컴퓨터 전체를 한꺼번에 평가하지 않고, 900개에서 회고 신호와 직업별 스킬을 만들고 100개에서 검증합니다.', '따라서 “학습”은 모델 가중치 업데이트가 아니라 경험 보고서에서 스킬을 뽑는 절차입니다. 이 구분이 중요합니다.']
+  },
+  {
+    id: '계산식 4 — GDPVal sign test 해석',
+    formula: String.raw`\[P\left(X \ge 105;\; X \sim \mathrm{Binomial}(172, 0.5)\right) \approx 0.002\]`,
+    explanation: ['그림 8에서 Sonnet 설정은 스킬 제공 에이전트가 105승, 67패를 기록했다고 보고합니다. 동률/비교 제외를 빼면 172개의 승패 판정으로 볼 수 있습니다.', '논문은 단측 p=0.002, 양측 p=0.005를 보고합니다. 이 수식은 “동전 던지기처럼 승률이 50%라면 105승 이상이 얼마나 드문가”를 보는 sign test 직관입니다.']
+  },
+  {
+    id: '계산식 5 — 파일 수 증가',
+    formula: String.raw`\[\Delta_{\text{files}} = 197.4 - 111.6 = 85.8\;\text{files per computer}\]`,
+    explanation: ['표 1의 시뮬레이션 전후 평균 파일 수 차이입니다. 한 달 업무 시뮬레이션 후 합성 컴퓨터 하나당 평균 85.8개 파일이 늘어납니다.', '평균 디렉터리 깊이는 거의 유지되므로, 논문은 이를 기존 폴더 구조 안에서 산출물이 확장된다는 증거로 해석합니다.']
+  }
 ];
 ---
 <BaseLayout title="장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터 — Hermes Paper Lab" description="arXiv:2604.28181v1 논문 전체 흐름 한국어 해설.">
@@ -38,6 +136,8 @@ const figureIndex = [
       <a href="#discussion">5. 논의</a>
       <a href="#conclusion">6. 결론</a>
       <a href="#appendix">부록</a>
+      <a href="#source-figures">원문 그림</a>
+      <a href="#equations">수식·계산식</a>
       <a href="#index">그림·표·수식</a>
       <a href="#reading">내 해석</a>
     </aside>
@@ -283,6 +383,44 @@ const figureIndex = [
           <p>이 논문이 말하는 “경험 신호”는 추상적 로그가 아니라, 이런 식으로 구체적인 실패 패턴—예: 단일 기준 자료 관리 실패, 문서 간 일관성 붕괴, 협업자 피드백 미반영—을 스킬로 바꿀 수 있는 형태입니다. Hermes의 스킬 우선 작업 흐름과 특히 잘 맞는 부분입니다.</p>
         </div>
         <p class="source">출처: 부록 A, 회고 분석 보고서 예시.</p>
+      </section>
+
+      <section class="paper-section" id="source-figures">
+        <h2>원문 그림 따로 보기</h2>
+        <p>
+          아래 이미지는 논문 원문 그림를 번호별로 분리해 넣은 것입니다. 위의 imggen high 인포그래픽은 이해를 돕기 위한 재구성 그림이고, 이 섹션은 원문 그림의 정확한 근거를 확인하는 용도입니다.
+        </p>
+        <div class="source-figure-grid">
+          {sourceFigures.map((figure) => (
+            <figure class={figure.wide ? 'source-figure-card wide' : 'source-figure-card'}>
+              <img src={`${base}${figure.src}`} alt={`${figure.id} — 원문 그림`} loading="lazy" />
+              <figcaption class="source-figure-body">
+                <h3>{figure.id}</h3>
+                <p><strong>원문 캡션 한국어 번역:</strong> {figure.caption}</p>
+                <p><strong>읽는 법:</strong> {figure.reading}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <p class="source-note">출처: arXiv:2604.28181v1 HTML/PDF의 원문 그림. 논문 이해와 비평 목적의 인용·해설용으로 번호와 의미를 보존했습니다.</p>
+      </section>
+
+      <section class="paper-section" id="equations">
+        <h2>수식·계산식 따로 풀어보기</h2>
+        <p>
+          이 논문은 새로운 모델 수식보다는 시뮬레이션 통계와 평가 계산이 중심입니다. 그래서 핵심 수치가 어떻게 읽히는지 LaTeX 형태로 따로 정리했습니다.
+        </p>
+        <div class="math-list">
+          {mathNotes.map((item) => (
+            <article class="math-card">
+              <h3>{item.id}</h3>
+              <div class="math-display" set:html={item.formula}></div>
+              <div class="math-legend">
+                {item.explanation.map((text) => <div>{text}</div>)}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section class="paper-section" id="index">
