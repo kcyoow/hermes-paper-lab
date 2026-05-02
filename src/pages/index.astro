@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 const firstPaperHref = `${base}papers/synthetic-computers-at-scale/`;
+const vbLoraHref = `${base}papers/vb-lora/`;
 ---
 <BaseLayout title="Hermes Paper Lab — 논문 지식베이스" description="논문 전체 흐름을 따라 읽는 한국어 전 논문 해설 아카이브.">
   <main>
@@ -12,7 +13,7 @@ const firstPaperHref = `${base}papers/synthetic-computers-at-scale/`;
         디스코드에는 짧은 링크만 남기고, 실제 분석은 웹 페이지에서 봅니다. 각 논문은 초록부터 결론/부록까지 섹션 순서를 유지하며, 핵심 주장·표·그림·한계·구현 아이디어를 한국어로 가볍게 정리합니다.
       </p>
       <div class="hero-actions">
-        <a class="pill dark" href={firstPaperHref}>첫 논문 보기</a>
+        <a class="pill dark" href={vbLoraHref}>VB-LoRA 보기</a>
         <a class="pill" href="#rules">작성 규칙 보기</a>
       </div>
     </section>
@@ -21,7 +22,7 @@ const firstPaperHref = `${base}papers/synthetic-computers-at-scale/`;
       <div class="section-header">
         <div>
           <h2 class="section-title">논문 목록</h2>
-          <p class="section-desc">현재는 첫 시작 논문만 올라가 있습니다. 이후 “이 논문 분석해서 사이트에 올려줘”라고 하면 이 목록에 계속 누적하는 구조입니다.</p>
+          <p class="section-desc">현재는 두 편의 전체 흐름 해설이 올라가 있습니다. 이후 “이 논문 분석해서 사이트에 올려줘”라고 하면 이 목록에 계속 누적하는 구조입니다.</p>
         </div>
       </div>
 
@@ -50,7 +51,36 @@ const firstPaperHref = `${base}papers/synthetic-computers-at-scale/`;
           </div>
         </div>
         <a class="paper-thumb" href={firstPaperHref} aria-label="첫 논문 열기">
-          <img src={`${base}images/papers/synthetic-computers/method-overview.svg`} alt="합성 컴퓨터 방법론 개요" />
+          <img src={`${base}images/papers/synthetic-computers/method-overview.png`} alt="합성 컴퓨터 방법론 고품질 인포그래픽" />
+        </a>
+      </article>
+
+      <article class="card paper-card" style="margin-top:20px">
+        <div class="paper-card-body">
+          <span class="kicker">전체 흐름 해설 · arXiv:2405.15179v3</span>
+          <h3>VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법</h3>
+          <p class="original-title">원제: VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks</p>
+          <p>
+            LoRA의 A/B 저랭크 행렬을 같은 길이의 부분 벡터로 나누고, 전역 공유 벡터 뱅크에서 top-k로 골라 섞어 재구성함으로써 어댑터 저장/전송 비용을 크게 낮추는 PEFT 논문입니다.
+          </p>
+          <div class="tags">
+            <span class="tag">PEFT</span>
+            <span class="tag">LoRA</span>
+            <span class="tag">벡터 뱅크</span>
+            <span class="tag">어댑터 압축</span>
+            <span class="tag">LLM 튜닝</span>
+          </div>
+          <div class="meta-line">
+            <span>저자: Yang Li, Shaobo Han, Shihao Ji</span>
+            <span>상태: 전체 흐름 해설 완료 · imggen high 시각화 포함</span>
+          </div>
+          <div class="hero-actions" style="justify-content:flex-start">
+            <a class="pill dark" href={vbLoraHref}>해설 열기</a>
+            <a class="pill" href="https://arxiv.org/abs/2405.15179v3">arXiv 원문</a>
+          </div>
+        </div>
+        <a class="paper-thumb" href={vbLoraHref} aria-label="VB-LoRA 논문 열기">
+          <img src={`${base}images/papers/vb-lora/method-overview.png`} alt="VB-LoRA 벡터 뱅크 기반 LoRA 압축 방법 인포그래픽" />
         </a>
       </article>
     </section>

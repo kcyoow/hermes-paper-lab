@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="VB-LoRA — 벡터 뱅크 기반 초고효율 LoRA 해설" description="VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks 논문을 초록부터 부록까지 한국어로 따라 읽는 전체 흐름 해설.">
+  <main class="site-shell paper-layout">
+    <aside class="toc">
+      <div class="toc-title">읽는 순서</div>
+      <a href="#quick">한눈에 보기</a>
+      <a href="#abstract">초록</a>
+      <a href="#intro">1. 서론</a>
+      <a href="#related">2. 관련 연구</a>
+      <a href="#method">3. 제안 방법</a>
+      <a href="#experiments">4. 실험</a>
+      <a href="#ablation">4.5 절제 실험</a>
+      <a href="#conclusion">5. 결론·한계</a>
+      <a href="#appendix">부록</a>
+      <a href="#figures">그림/표</a>
+      <a href="#reading">내 해석</a>
+    </aside>
+
+    <article class="paper-article">
+      <header class="paper-hero">
+        <span class="kicker">전체 흐름 해설 · arXiv:2405.15179v3</span>
+        <h1>VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법</h1>
+        <p class="original-title">원제: VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks</p>
+        <p class="subtitle">
+          이 논문은 LoRA의 A/B 저랭크 행렬을 그대로 저장하지 않고, 같은 길이의 부분 벡터로 쪼갠 뒤 전역 공유 <strong>vector bank</strong>에서 top-k로 골라 섞어 재구성하는 방법을 제안합니다. 목표는 개인별·태스크별 LLM 커스터마이징이 많아질 때 어댑터 저장/전송 비용을 극단적으로 줄이는 것입니다.
+        </p>
+        <div class="tags">
+          <span class="tag">PEFT</span><span class="tag">LoRA</span><span class="tag">벡터 뱅크</span><span class="tag">어댑터 압축</span><span class="tag">LLM 튜닝</span>
+        </div>
+        <div class="meta-line">
+          <span>저자: Yang Li, Shaobo Han, Shihao Ji</span>
+          <span>최초 공개: 2024-05-24 · v3 업데이트: 2024-10-29</span>
+          <span>코드: github.com/leo-yangli/VB-LoRA</span>
+        </div>
+      </header>
+
+      <section class="paper-section" id="quick">
+        <h2>한눈에 보기</h2>
+        <div class="figure-card">
+          <img src={`${base}images/papers/vb-lora/method-overview.png`} alt="VB-LoRA가 LoRA 행렬을 부분 벡터로 나누고 공유 벡터 뱅크의 top-k 혼합으로 재구성하는 과정을 보여주는 고품질 인포그래픽" />
+          <div class="figure-caption">
+            imggen high로 생성한 이해 중심 시각화입니다. 수치는 논문 실험 설정 기준이며, 일반적 성능 보장이 아니라 해당 논문에서 보고한 결과입니다.
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><strong>0.4%</strong><span>Llama 2-13B에서 LoRA 저장 파라미터 대비 VB-LoRA 저장량</span></div>
+          <div class="stat"><strong>0.8M</strong><span>Llama 2-7B instruction tuning에서 VB-LoRA 저장 파라미터</span></div>
+          <div class="stat"><strong>88.5</strong><span>RoBERTa-large GLUE 평균, VB-LoRA_all</span></div>
+          <div class="stat"><strong>k=2</strong><span>CoLA 절제 실험에서 가장 좋은 top-k 설정</span></div>
+        </div>
+        <h3>TL;DR</h3>
+        <p>
+          VB-LoRA는 “각 레이어/모듈마다 LoRA A/B를 따로 저장한다”는 구조를 깨고, A/B를 작은 부분 벡터로 나눈 다음 전역 벡터 뱅크의 조합으로 표현합니다. 학습 중에는 벡터 뱅크와 top-k 선택 로짓을 최적화하고, 저장 시에는 벡터 뱅크·선택 인덱스·혼합 가중치만 남깁니다. 논문은 GLUE, E2E, instruction tuning, 수학 추론에서 기존 PEFT와 비슷하거나 더 나은 성능을 더 적은 저장 파라미터로 얻었다고 보고합니다.
+        </p>
+        <div class="callout">
+          <strong>이 논문의 핵심 문장:</strong> “LoRA의 저랭크 행렬을 로컬 행렬 단위로만 보지 말고, 전체 레이어·모듈·행렬 차원을 가로지르는 공유 가능한 부분 벡터들의 조합으로 보자.”
+        </div>
+      </section>
+
+      <section class="paper-section" id="abstract">
+        <h2>초록</h2>
+        <p>
+          초록은 문제를 PEFT의 저장/전송 비용으로 잡습니다. LoRA류 방법은 전체 모델을 모두 업데이트하지 않아 효율적이지만, 사용자별·태스크별 커스터마이징이 늘어나면 어댑터 자체를 많이 저장하고 전달해야 합니다. 저자들은 이를 더 줄이기 위해 “divide-and-share” 패러다임과 <em>vector bank</em>를 도입합니다.
+        </p>
+        <p>
+          VB-LoRA는 LoRA의 모든 저랭크 행렬을 공유 벡터 뱅크에서 top-k 혼합으로 합성합니다. 논문은 자연어 이해, 자연어 생성, instruction tuning, 수학 추론 실험을 통해 성능을 유지하거나 개선하면서 저장 파라미터를 크게 줄였다고 주장합니다. 특히 Llama 2-13B fine-tuning에서 LoRA 저장 파라미터의 0.4%만 사용하면서 더 좋은 결과를 냈다고 보고합니다.
+        </p>
+      </section>
+
+      <section class="paper-section" id="intro">
+        <h2>1. 서론</h2>
+        <p>
+          서론은 PEFT가 왜 중요한지부터 시작합니다. foundation model을 다양한 도메인이나 사용자 요구에 맞추려면 fine-tuning이 필요하지만, 전체 파라미터를 매번 저장하는 것은 너무 비쌉니다. LoRA는 업데이트 ΔW를 B와 A의 저랭크 곱으로 제한해 저장량을 줄였고, VeRA나 Tied-LoRA 같은 변형은 레이어 간 공유를 더 강하게 사용합니다.
+        </p>
+        <p>
+          하지만 저자들은 기존 LoRA 계열이 여전히 두 가지 경계에 갇혀 있다고 봅니다. 첫째, 각 모듈·레이어 안의 로컬 행렬 단위에서 주로 생각합니다. 둘째, A와 B라는 원래 행렬 차원만 다룹니다. VB-LoRA는 이 경계를 깨고 rank-one component vector를 다시 부분 벡터로 나누어, 레이어·모듈·행렬 종류를 넘어 공유 가능한 표현으로 만듭니다.
+        </p>
+        <p>
+          Figure 1은 VB-LoRA의 큰 그림입니다. 왼쪽은 여러 모델 파라미터가 하나의 vector bank에서 나온 벡터 조합으로 표현될 수 있음을 보여주고, 오른쪽은 top-k softmax가 벡터 뱅크에서 k개 벡터를 고른 뒤 sub-vector를 만들고, 이 sub-vector들이 LoRA 파라미터의 원하는 위치에 배치되는 구조를 보여줍니다.
+        </p>
+        <ul>
+          <li><strong>기여 1:</strong> 행렬 차원·모듈·레이어를 가로지르는 global vector bank 기반 divide-and-share 패러다임.</li>
+          <li><strong>기여 2:</strong> LoRA의 저랭크 분해를 rank-one decomposition으로 보고, component vector를 같은 길이의 sub-vector로 추가 분할.</li>
+          <li><strong>기여 3:</strong> sparse top-k admixture module로 end-to-end differentiable한 공유 메커니즘 학습.</li>
+          <li><strong>기여 4:</strong> NLU, NLG, instruction tuning, math reasoning에서 저장량 대비 강한 실험 결과.</li>
+        </ul>
+      </section>
+
+      <section class="paper-section" id="related">
+        <h2>2. 관련 연구</h2>
+        <h3>전역 중복성을 이용한 파라미터 효율</h3>
+        <p>
+          저자들은 LoRA가 행렬 내부의 dependency를 이용한다면, Tied-LoRA는 A/B 행렬을 레이어 간 묶어 inter-matrix redundancy를 활용한다고 설명합니다. VeRA는 무작위 초기화된 A/B를 고정하고 공유한 뒤 scaling vector만 학습해 저장량을 더 줄입니다. LoRA-XS는 frozen LoRA projection 사이에 작은 trainable matrix를 넣는 방식입니다. VB-LoRA는 이 흐름에서 sub-vector 수준의 전역 공유로 더 미세한 공유 단위를 제안합니다.
+        </p>
+        <h3>희소 admixture model 기반 파라미터 모델링</h3>
+        <p>
+          두 번째 관련 축은 admixture model입니다. 인구유전학, topic modeling, hyperspectral unmixing에서 archetype/endmember 조합으로 관측 데이터를 표현하던 아이디어를 LLM 파라미터 표현으로 가져옵니다. 다만 기존 방식은 integer programming 등으로 어려워질 수 있으므로, 저자들은 MoE의 sparse top-k 아이디어를 변형해 back-propagation으로 vector bank와 mixing weight를 직접 학습합니다.
+        </p>
+      </section>
+
+      <section class="paper-section" id="method">
+        <h2>3. 제안 방법</h2>
+        <h3>3.1 Transformer와 LoRA 예비 설명</h3>
+        <p>
+          논문은 Transformer의 MHA와 FFN 선형 행렬들을 대상으로 설명합니다. LoRA는 사전학습 행렬 W₀에 대한 업데이트 ΔW를 ΔW = B A로 제한합니다. B는 m×r, A는 r×n이고 r은 작습니다. VeRA는 여기에 scaling vector를 추가하고 A/B를 고정·공유하는 식으로 저장량을 줄입니다.
+        </p>
+        <h3>3.2 Divide-and-Share</h3>
+        <p>
+          핵심은 LoRA의 ΔW = B A를 rank-one 합으로 다시 보는 것입니다. 각 rank component는 두 벡터의 outer product로 볼 수 있습니다. VB-LoRA는 이 component vector들을 다시 같은 길이 b의 sub-vector로 자릅니다. 이렇게 하면 A와 B, 서로 다른 레이어, 서로 다른 모듈에서 나온 조각들이 “같은 길이의 벡터”라는 공통 형식으로 모입니다.
+        </p>
+        <p>
+          그 다음 모든 sub-vector u를 vector bank B = &#123;α₁, …, αₕ&#125;의 top-k 가중합으로 표현합니다. 로짓 σ를 학습하고, TopK(σ, k)에 softmax를 적용해 선택된 k개 벡터의 혼합 가중치를 얻습니다. 이 top-k admixture module은 미분 가능하므로 downstream task fine-tuning 목적함수로 vector bank와 로짓을 함께 최적화할 수 있습니다.
+        </p>
+        <div class="callout">
+          <strong>직관:</strong> LoRA가 “각 방마다 필요한 도구 세트를 따로 보관”하는 방식이라면, VB-LoRA는 “공용 창고(vector bank)에 기본 부품을 두고, 각 방에는 어떤 부품을 어떤 비율로 쓸지만 저장”하는 방식입니다.
+        </div>
+        <h3>3.3 LoRA 경계 깨기</h3>
+        <p>
+          기존 LoRA는 각 ΔW 행렬을 독립적으로 factorize합니다. VB-LoRA는 sub-vector가 가진 multi-index, 즉 레이어·모듈·head·A/B·가상 분할 위치를 가로질러 같은 vector bank를 공유합니다. 저자들은 이를 hierarchical and constrained tensor decomposition처럼 해석합니다. Algorithm 1은 PyTorch 스타일 의사코드로, logits에서 top-k를 뽑고 vector_bank의 해당 벡터들을 가중합해 A와 B를 만든 뒤, 명시적으로 ΔW를 만들지 않고 (x @ B) @ A 형태로 계산할 수 있음을 보여줍니다.
+        </p>
+        <h3>3.4 파라미터 수</h3>
+        <p>
+          저장 파라미터는 크게 세 부분입니다. vector bank 자체, 선택 인덱스 I, top-k 혼합 가중치 V입니다. 학습 후 로짓은 버릴 수 있고, 선택된 인덱스와 가중치만 저장합니다. 논문은 k=2이고 인덱스를 uint8로 저장할 때 VB-LoRA 저장량을 대략 <code>hb + 3LMr(d/b)</code>로 설명합니다. 여기서 대부분은 공유 vector bank에 있으며, LoRA처럼 모듈 수나 레이어 수에 강한 계수로 선형 증가하지 않는다는 점이 핵심입니다.
+        </p>
+      </section>
+
+      <section class="paper-section" id="experiments">
+        <h2>4. 실험</h2>
+        <p>
+          실험은 네 축으로 구성됩니다. 자연어 이해(GLUE), 자연어 생성(E2E), instruction tuning(MT-Bench), 수학 추론(GSM8K/MATH)입니다. 모든 실험은 8×NVIDIA A100 80GB 서버에서 수행했고, 자세한 hyperparameter는 부록에 둡니다.
+        </p>
+        <h3>4.1 자연어 이해: GLUE</h3>
+        <p>
+          RoBERTa-base와 RoBERTa-large에서 CoLA, SST-2, MRPC, STS-B, QNLI, RTE를 평가합니다. VB-LoRA_qv는 query/value만, VB-LoRA_all은 query/key/value/output과 FFN up/down까지 모든 선형 모듈을 fine-tune합니다. vector bank는 길이 256 벡터 90개, rank 4, k=2가 기본입니다.
+        </p>
+        <p>
+          Table 1에서 RoBERTa-large의 VB-LoRA_all은 0.033M 저장 파라미터로 평균 88.5를 기록합니다. 같은 all 설정의 VeRA는 0.258M, Tied-LoRA는 0.239M입니다. 저자들은 특히 all-module fine-tuning이 성능에 유리하지만 기존 방법은 파라미터 수가 크게 늘어나는 반면, VB-LoRA는 같은 vector bank를 유지하면서 인덱스/가중치만 늘어 상대 증가폭이 작다고 해석합니다.
+        </p>
+        <h3>4.2 자연어 생성: E2E</h3>
+        <p>
+          GPT-2 Medium/Large를 E2E restaurant dataset으로 fine-tune합니다. Table 2에서 VB-LoRA는 GPT-2 Medium 기준 0.076M, GPT-2 Large 기준 0.13M 저장 파라미터로 VeRA보다 약 20% 적은 저장량을 쓰면서 BLEU, NIST, METEOR, ROUGE-L, CIDEr에서 경쟁력 있는 성능을 보입니다.
+        </p>
+        <h3>4.3 Instruction tuning</h3>
+        <p>
+          Llama 2 7B와 13B를 QLoRA framework 안에서 Cleaned Alpaca Dataset으로 1 epoch fine-tune하고, MT-Bench 첫 턴 점수를 GPT-4로 평가합니다. Table 3에서 VB-LoRA는 Llama 2 7B에서 0.8M 저장 파라미터와 점수 5.71, Llama 2 13B에서 1.1M 저장 파라미터와 점수 6.31을 보고합니다. 논문은 각각 LoRA 저장량의 0.5%, 0.4%만 사용한다고 강조합니다.
+        </p>
+        <h3>4.4 수학 추론</h3>
+        <p>
+          Mistral-7B-v0.1과 Gemma-7B를 MetaMathQA로 fine-tune하고 GSM8K와 MATH에서 평가합니다. Table 4에서 Mistral-7B VB-LoRA는 0.65M 저장 파라미터로 GSM8K 69.22, MATH 17.90을 기록합니다. Gemma-7B에서는 0.67M으로 GSM8K 75.96, MATH 28.90입니다. MATH에서는 LoRA가 더 높지만, GSM8K와 저장량 측면에서는 VB-LoRA의 장점이 두드러집니다.</p>
+      </section>
+
+      <section class="paper-section" id="ablation">
+        <h2>4.5 절제 실험</h2>
+        <p>
+          절제 실험은 RoBERTa-large에서 query/value만 fine-tune하며 진행합니다. Table 5는 vector selection 방법을 비교합니다. Top-k 중에서는 Top-2 softmax가 CoLA 68.3으로 가장 좋고, Top-1은 66.9, Top-3은 68.1입니다. Noisy Top-k, Gumbel-Softmax, Straight-Through Gumbel-Softmax는 크게 낮게 나옵니다. 저자들은 random noise가 vector bank 학습을 불안정하게 만들 수 있다고 해석합니다.
+        </p>
+        <p>
+          Table 6은 sub-vector 길이 b를 비교합니다. b=128, 256, 512, 1024 중 b=256이 CoLA 68.7로 가장 좋습니다. 너무 작으면 선택 문제가 복잡해지고, 너무 크면 vector bank의 specialization이 약해질 수 있다는 설명입니다. Figure 2는 k=1일 때 선택 벡터가 거의 바뀌지 않는 반면, k>1에서는 초기 학습 단계에서 vector exploration이 활발함을 보여줍니다.
+        </p>
+      </section>
+
+      <section class="paper-section" id="conclusion">
+        <h2>5. 결론·한계</h2>
+        <p>
+          결론은 VB-LoRA가 “divide-and-share”와 differentiable top-k admixture module을 통해 state-of-the-art PEFT 대비 훨씬 적은 저장 파라미터로 경쟁력 있는 성능을 낸다고 요약합니다. 저자들은 이 구조가 LoRA뿐 아니라 inserted adapter, prompt tuning, BitFit 등 다른 PEFT 방식으로도 확장될 수 있다고 봅니다.
+        </p>
+        <p>
+          한계도 분명히 제시합니다. 실험은 text-only, monolingual English, LoRA-only setting에 제한됩니다. 또한 vector bank 크기와 vector length의 탐색 범위도 제한적입니다. broader impact 측면에서는 adapter 저장/전송 비용을 줄여 개인화 LLM 접근성을 높일 수 있지만, LLM 일반 위험 외의 별도 부정적 사회 영향은 예상하지 않는다고 적습니다.
+        </p>
+      </section>
+
+      <section class="paper-section" id="appendix">
+        <h2>부록</h2>
+        <h3>하이퍼파라미터와 계산 자원</h3>
+        <p>
+          Appendix A는 GLUE, NLG, instruction tuning hyperparameter와 계산 자원을 제공합니다. 모든 실험은 8×A100 80GB에서 수행됩니다. 계산 overhead에 대해서는 sub-vector decomposition 때문에 training time overhead가 생기지만 inference에는 영향을 주지 않는다고 설명합니다. LoRA와 VB-LoRA 모두 추론 시 원래 모델 파라미터에 merge할 수 있기 때문입니다.
+        </p>
+        <p>
+          메모리 효율 측면에서는 VB-LoRA가 training time을 약 15–20% 더 쓰는 대신 LoRA보다 메모리를 덜 소비한다고 설명합니다. 이 부분은 “저장 파라미터가 적다”와 “훈련 시간이 항상 더 빠르다”를 구분해야 하는 지점입니다.</p>
+        <h3>벡터 선택 시각화</h3>
+        <p>
+          Appendix B는 vector selection이 학습 중 어떻게 변하는지 보여줍니다. Figure 3은 초기 선택과 최종 선택이 많이 달라짐을 보여주고, Figure 4는 탐색이 주로 초기 학습에 일어나며 후반에는 update가 sparse해진다는 점을 보여줍니다. Figure 5와 6은 특정 벡터가 깊은 레이어나 특정 모듈/행렬 유형에서 더 많이 사용될 수 있음을 보여줍니다. Figure 7은 Gemma-7B에서 vector usage가 대체로 정상분포처럼 퍼진다고 보고합니다.
+        </p>
+        <h3>Instruction tuning 예시</h3>
+        <p>
+          마지막 부록은 LoRA와 VB-LoRA로 fine-tune한 Llama 2 13B의 답변 예시를 제공합니다. 이는 정량 점수만으로는 보이지 않는 응답 품질을 보여주려는 보조 자료입니다.</p>
+      </section>
+
+      <section class="paper-section" id="figures">
+        <h2>그림/표/수식 인덱스</h2>
+        <table class="metric-table">
+          <thead><tr><th>ID</th><th>무엇을 보여주나</th><th>왜 중요한가</th><th>주의점</th></tr></thead>
+          <tbody>
+            <tr><td>Figure 1</td><td>vector bank 공유와 top-k admixture 기반 VB-LoRA 구조</td><td>논문 방법의 핵심 그림</td><td>기존 LoRA를 사후 무손실 압축한다는 뜻은 아님</td></tr>
+            <tr><td>Figure 2</td><td>k=1,2,3 및 noisy top-2의 vector selection footprint</td><td>왜 k=2가 잘 작동하는지 직관 제공</td><td>CoLA/RoBERTa-large 설정 기준</td></tr>
+            <tr><td>Table 1</td><td>RoBERTa base/large GLUE 결과</td><td>VB-LoRA가 적은 저장량으로 경쟁력 있는 평균 성능을 보임</td><td>일부 baseline은 원 논문 수치, 일부는 저자 구현</td></tr>
+            <tr><td>Table 2</td><td>GPT-2 E2E 자연어 생성 결과</td><td>생성 태스크에서도 저장량 절감 확인</td><td>VeRA와 비슷한 성능, 모든 지표에서 압도는 아님</td></tr>
+            <tr><td>Table 3</td><td>Llama 2 MT-Bench instruction tuning 결과</td><td>0.8M/1.1M 저장 파라미터로 LoRA 대비 큰 절감</td><td>GPT-4 평가 모델 변화 가능성을 저자도 언급</td></tr>
+            <tr><td>Table 4</td><td>Mistral/Gemma 수학 추론 결과</td><td>GSM8K에서 강하고 저장량이 작음</td><td>MATH에서는 LoRA가 더 높은 설정도 있음</td></tr>
+            <tr><td>Eq. 1</td><td>ΔW = BA = rank-one vector outer product 합</td><td>Divide 단계의 출발점</td><td>표기보다 개념: A/B를 부분 벡터로 나눌 수 있게 보는 것</td></tr>
+            <tr><td>Eq. 2</td><td>sub-vector를 vector bank의 top-k softmax 혼합으로 표현</td><td>Share 단계의 핵심</td><td>저장 시 로짓 전체가 아니라 선택 인덱스/가중치만 남김</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="paper-section" id="reading">
+        <h2>내 해석</h2>
+        <div class="claim-table">
+          <div class="claim-row claim-head"><div>저자 주장</div><div>내 해석</div><div>신뢰도</div></div>
+          <div class="claim-row"><div>VB-LoRA는 LoRA 저장 파라미터를 극단적으로 줄인다.</div><div>핵심 장점은 확실히 저장/전송 비용입니다. 특히 많은 사용자별 adapter를 운영할 때 의미가 큽니다.</div><div>높음</div></div>
+          <div class="claim-row"><div>성능은 기존 PEFT와 comparable or better다.</div><div>실험 범위에서는 설득력 있지만, 모든 태스크에서 항상 우월하다는 뜻은 아닙니다. MATH처럼 LoRA가 더 높은 지표도 있습니다.</div><div>중간~높음</div></div>
+          <div class="claim-row"><div>top-k admixture가 안정적이고 효과적이다.</div><div>절제 실험은 Top-2의 강점을 보여주지만, vector bank 크기·b·rank 조합은 더 넓게 탐색할 여지가 있습니다.</div><div>중간</div></div>
+        </div>
+        <h3>Hermes 워크플로 관점</h3>
+        <p>
+          이 논문은 “개인별/작업별 작은 어댑터를 많이 저장해야 하는 환경”에 특히 중요합니다. Hermes처럼 여러 프로젝트·사용자·태스크에 대해 특화된 행동 패턴을 축적하려는 시스템에서는, adapter를 무한히 늘리는 대신 공유된 표현 공간과 작은 routing/selection 정보를 저장하는 방향이 유용할 수 있습니다.</p>
+        <h3>구현 아이디어</h3>
+        <ul>
+          <li>Hugging Face PEFT에 VB-LoRA가 merge되어 있으므로, 실험은 PEFT package의 VBLoRA reference부터 시작하는 것이 현실적입니다.</li>
+          <li>우선 작은 모델/작은 데이터셋에서 LoRA vs VB-LoRA 저장량, train time, memory, downstream metric을 같이 비교해야 합니다.</li>
+          <li>“저장량 감소”만 보지 말고, 학습 overhead와 hyperparameter sensitivity를 같이 기록해야 합니다.</li>
+        </ul>
+        <h3>과장하면 안 되는 지점</h3>
+        <ul>
+          <li>VB-LoRA가 기존 LoRA checkpoint를 항상 무손실로 사후 압축한다는 뜻은 아닙니다. 벡터 뱅크 기반 표현으로 학습/저장하는 방법입니다.</li>
+          <li>훈련 시간이 항상 줄어드는 방법은 아닙니다. 부록은 15–20% training time overhead를 언급합니다.</li>
+          <li>영어 text-only 실험 중심이므로, 멀티모달·다국어·초장문 환경에서는 별도 검증이 필요합니다.</li>
+        </ul>
+      </section>
+    </article>
+  </main>
+</BaseLayout>
