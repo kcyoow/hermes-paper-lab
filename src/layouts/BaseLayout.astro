@@ -2,7 +2,7 @@
 import '../styles/global.css';
 const {
   title = 'Hermes Paper Lab',
-  description = 'Full-paper walkthrough archive for AI and productivity research.'
+  description = 'AI와 생산성 연구 논문을 전체 흐름으로 따라 읽는 한국어 지식베이스.'
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://kcyoow.github.io');
 const base = import.meta.env.BASE_URL;
@@ -18,18 +18,18 @@ const base = import.meta.env.BASE_URL;
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
     <header class="site-header">
       <div class="site-shell nav">
-        <a class="brand" href={base} aria-label="Hermes Paper Lab home">
+        <a class="brand" href={base} aria-label="Hermes Paper Lab 홈">
           <span class="brand-mark">HL</span>
           <span>Hermes Paper Lab</span>
         </a>
-        <nav class="nav-links" aria-label="Primary navigation">
-          <a href={`${base}#papers`}>Papers</a>
-          <a href={`${base}#rules`}>Content rule</a>
+        <nav class="nav-links" aria-label="주요 탐색">
+          <a href={`${base}#papers`}>논문 목록</a>
+          <a href={`${base}#rules`}>작성 규칙</a>
           <a class="pill dark" href="https://github.com/kcyoow/hermes-paper-lab">GitHub</a>
         </nav>
       </div>
@@ -37,7 +37,7 @@ const base = import.meta.env.BASE_URL;
     <slot />
     <footer class="footer">
       <div class="site-shell">
-        Hermes Paper Lab · full-paper walkthroughs, source-grounded notes, and visual maps. Built with Astro and GitHub Pages.
+        Hermes Paper Lab · 논문 전체 흐름 해설, 원문 근거 노트, 시각 지도. Astro와 GitHub Pages로 구축했습니다.
       </div>
     </footer>
   </body>

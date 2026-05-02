@@ -2,77 +2,78 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 const metrics = [
-  ['Synthetic computers', '1,000', 'preliminary experiments에서 생성한 사용자별 synthetic computer 수'],
-  ['Avg. files', '111.6 → 197.4', '한 달 시뮬레이션 전후 평균 파일 수 변화; 디렉터리 깊이는 거의 유지'],
-  ['Avg. turns', '2,272', 'weekly planning 63 + daily execution 2,209 turns 평균'],
-  ['Avg. runtime', '8.59h', '한 synthetic computer당 평균 wall-clock time'],
-  ['Collaborators', '5.5', '평균 simulated collaborators; 평균 communication 31회'],
-  ['Skill gain', '+7.0pp', 'in-domain: 61.6% → 68.6%, 83/100 computers에서 skill-augmented가 우세'],
-  ['GDPVal OOD', '105 vs 67', 'Sonnet setting에서 skill-augmented wins/losses; p=0.002 one-sided, p=0.005 two-sided'],
-  ['Released resources', '100 + 500', '100 synthetic computers 및 500 retrospective analysis reports 공개']
+  ['합성 컴퓨터', '1,000', '예비 실험에서 생성한 사용자별 합성 컴퓨터 수'],
+  ['평균 파일 수', '111.6 → 197.4', '한 달 시뮬레이션 전후 평균 파일 수 변화; 디렉터리 깊이는 거의 유지'],
+  ['평균 턴 수', '2,272', '주간 계획 63턴 + 일일 실행 2,209턴 평균'],
+  ['평균 실행 시간', '8.59시간', '합성 컴퓨터 하나당 평균 실제 경과 시간'],
+  ['협업자', '5.5명', '평균 시뮬레이션 협업자 수; 평균 소통 31회'],
+  ['스킬 개선폭', '+7.0%p', '동일 영역 평가: 61.6% → 68.6%, 100개 중 83개에서 스킬 제공 에이전트가 우세'],
+  ['GDPVal 외부 평가', '105 대 67', 'Sonnet 설정에서 스킬 제공 에이전트의 승/패; 단측 p=0.002, 양측 p=0.005'],
+  ['공개 자료', '100 + 500', '합성 컴퓨터 100개와 회고 분석 보고서 500개 공개']
 ];
 const figureIndex = [
-  ['Figure 1', '전체 방법론 개요: persona → synthetic computer → long-horizon simulation → process/outcome signals'],
-  ['Figure 2', 'persona를 detailed user profile, filesystem plan, artifacts로 확장하는 synthetic computer creation pipeline'],
-  ['Figure 3', '생성된 artifact 예시: VCMM workbook 및 Capital Markets Outlook PDF'],
-  ['Figure 4–5', '1,000 personas의 직업 분포 및 synthetic computer의 artifact type distribution'],
-  ['Table 1', '시뮬레이션 전후 computer statistics: files 111.6 → 197.4, directories 30.4 → 36.0'],
-  ['Table 2', 'DOCX/XLSX/PPTX/PDF 등 artifact file sizes; placeholder가 아닌 content-rich 파일임을 보여줌'],
-  ['Table 3', '평균 2,272 turns, 8.59 hours, 5.5 collaborators, 31 communications'],
-  ['Table 4', 'occupation-specific skills의 in-domain 개선: 61.6% → 68.6%, +7.0pp'],
-  ['Table 5', 'GDPVal과 비교: 더 많은 files, deliverables, turns, runtime을 요구하는 setup'],
-  ['Figure 8', 'GDPVal out-of-domain transfer 결과: Sonnet에서 105 wins vs 67 losses'],
-  ['Figure 9', 'simulation → retrospective signals → skills → model improvement로 이어지는 self-improvement loop']
+  ['그림 1', '전체 방법론 개요: 페르소나 → 합성 컴퓨터 → 장기 시뮬레이션 → 과정/결과 신호'],
+  ['그림 2', '페르소나를 상세 사용자 프로필, 파일시스템 계획, 산출물로 확장하는 합성 컴퓨터 생성 파이프라인'],
+  ['그림 3', '생성된 산출물 예시: VCMM 워크북 및 Capital Markets Outlook PDF'],
+  ['그림 4–5', '1,000개 페르소나의 직업 분포 및 합성 컴퓨터 산출물 유형 분포'],
+  ['표 1', '시뮬레이션 전후 컴퓨터 통계: 파일 111.6 → 197.4, 디렉터리 30.4 → 36.0'],
+  ['표 2', 'DOCX/XLSX/PPTX/PDF 등 산출물 파일 크기; 빈 자리표시자가 아니라 내용이 채워진 파일임을 보여줌'],
+  ['표 3', '평균 2,272턴, 8.59시간, 협업자 5.5명, 소통 31회'],
+  ['표 4', '직업별 스킬의 동일 영역 개선: 61.6% → 68.6%, +7.0%p'],
+  ['표 5', 'GDPVal과 비교: 더 많은 파일, 산출물, 턴, 실행 시간을 요구하는 설정'],
+  ['그림 8', 'GDPVal 외부 영역 전이 결과: Sonnet에서 105승 대 67패'],
+  ['그림 9', '시뮬레이션 → 회고 신호 → 스킬 → 모델 개선으로 이어지는 자기개선 루프']
 ];
 ---
-<BaseLayout title="Synthetic Computers at Scale — Hermes Paper Lab" description="arXiv:2604.28181v1 full-paper walkthrough in Korean.">
+<BaseLayout title="장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터 — Hermes Paper Lab" description="arXiv:2604.28181v1 논문 전체 흐름 한국어 해설.">
   <main class="site-shell paper-layout">
-    <aside class="toc" aria-label="Paper table of contents">
-      <div class="toc-title">Walkthrough</div>
-      <a href="#quick-read">Quick read</a>
-      <a href="#abstract">Abstract</a>
-      <a href="#intro">1. Introduction</a>
-      <a href="#creation">2. Synthetic computer creation</a>
-      <a href="#simulation">3. Long-horizon simulation</a>
-      <a href="#experiments">4. Experiments</a>
-      <a href="#discussion">5. Discussion</a>
-      <a href="#conclusion">6. Conclusion</a>
-      <a href="#appendix">Appendix</a>
-      <a href="#index">Figures & tables</a>
-      <a href="#reading">My reading</a>
+    <aside class="toc" aria-label="논문 목차">
+      <div class="toc-title">해설 목차</div>
+      <a href="#quick-read">한눈에 보기</a>
+      <a href="#abstract">초록</a>
+      <a href="#intro">1. 서론</a>
+      <a href="#creation">2. 합성 컴퓨터 생성</a>
+      <a href="#simulation">3. 장기 생산성 시뮬레이션</a>
+      <a href="#experiments">4. 실험</a>
+      <a href="#discussion">5. 논의</a>
+      <a href="#conclusion">6. 결론</a>
+      <a href="#appendix">부록</a>
+      <a href="#index">그림·표·수식</a>
+      <a href="#reading">내 해석</a>
     </aside>
 
     <article class="paper-article">
       <header class="paper-hero">
-        <span class="kicker">arXiv:2604.28181v1 · full walkthrough</span>
-        <h1>Synthetic Computers at Scale for Long-Horizon Productivity Simulation</h1>
+        <span class="kicker">arXiv:2604.28181v1 · 전체 흐름 해설</span>
+        <h1>장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터</h1>
+        <p class="original-title">원제: Synthetic Computers at Scale for Long-Horizon Productivity Simulation</p>
         <p class="subtitle">
-          실제 사용자 컴퓨터처럼 파일, 디렉터리, 문서, 스프레드시트, 발표자료, 협업 흔적을 가진 synthetic computer를 대규모로 만들고, 그 위에서 장기 생산성 업무를 시뮬레이션해 에이전트를 개선하는 방법론입니다.
+          실제 사용자 컴퓨터처럼 파일, 디렉터리, 문서, 스프레드시트, 발표자료, 협업 흔적을 가진 합성 컴퓨터를 대규모로 만들고, 그 위에서 장기 생산성 업무를 시뮬레이션해 에이전트를 개선하는 방법론입니다.
         </p>
         <div class="tags">
-          <span class="tag">agents</span><span class="tag">long-horizon</span><span class="tag">productivity simulation</span><span class="tag">synthetic data</span><span class="tag">skills</span>
+          <span class="tag">에이전트</span><span class="tag">장기 작업</span><span class="tag">생산성 시뮬레이션</span><span class="tag">합성 데이터</span><span class="tag">스킬</span>
         </div>
         <div class="meta-line">
-          <span>Tao Ge, Baolin Peng, Hao Cheng, Jianfeng Gao</span>
-          <span>Published: 2026-04-30</span>
-          <span>Primary source: arXiv HTML/PDF v1</span>
+          <span>저자: Tao Ge, Baolin Peng, Hao Cheng, Jianfeng Gao</span>
+          <span>발행일: 2026-04-30</span>
+          <span>주요 출처: arXiv HTML/PDF v1</span>
         </div>
         <div class="hero-actions" style="justify-content:flex-start">
-          <a class="pill dark" href="https://arxiv.org/abs/2604.28181v1">arXiv abs</a>
+          <a class="pill dark" href="https://arxiv.org/abs/2604.28181v1">arXiv 초록</a>
           <a class="pill" href="https://arxiv.org/pdf/2604.28181v1">PDF</a>
-          <a class="pill green" href="https://huggingface.co/datasets/microsoft/synthetic-computers-at-scale">Dataset</a>
+          <a class="pill green" href="https://huggingface.co/datasets/microsoft/synthetic-computers-at-scale">데이터셋</a>
         </div>
       </header>
 
       <section class="paper-section" id="quick-read">
-        <h2>Quick Read</h2>
-        <h3>TL;DR</h3>
+        <h2>한눈에 보기</h2>
+        <h3>핵심 요약</h3>
         <p>
-          이 논문은 “장기 생산성 에이전트”를 평가·개선하려면 단순 task prompt가 아니라, 사용자의 파일과 업무 히스토리가 축적된 컴퓨터 환경 자체가 필요하다고 주장합니다. 저자들은 persona에서 출발해 realistic folder hierarchy와 content-rich artifacts를 가진 synthetic computer를 만들고, 그 안에서 setup agent와 work agent가 약 한 달 분량의 업무를 수행하게 합니다. 1,000개 synthetic computer 실험에서 각 run은 평균 2,272 turns, 8.59시간이 걸렸고, 여기서 뽑은 retrospective signal을 occupation-specific skill로 바꾸면 held-out synthetic computers와 GDPVal benchmark 모두에서 개선이 나타납니다.
+          이 논문은 “장기 생산성 에이전트”를 평가·개선하려면 단순 작업 지시문이 아니라, 사용자의 파일과 업무 이력이 축적된 컴퓨터 환경 자체가 필요하다고 주장합니다. 저자들은 페르소나에서 출발해 현실적인 폴더 구조와 내용이 채워진 산출물을 가진 합성 컴퓨터를 만들고, 그 안에서 설정 에이전트와 작업 에이전트가 약 한 달 분량의 업무를 수행하게 합니다. 1,000개 합성 컴퓨터 실험에서 각 실행은 평균 2,272턴, 8.59시간이 걸렸고, 여기서 뽑은 회고 신호를 직업별 스킬로 바꾸면 검증용 합성 컴퓨터와 GDPVal 평가 모두에서 개선이 나타납니다.
         </p>
         <div class="callout">
           <strong>왜 중요함?</strong>
-          <p>Hermes식 workflow 관점에서는 이 논문이 “skills를 어떻게 대규모 경험 데이터에서 만들고 검증할 수 있는가”에 대한 직접적인 힌트를 줍니다. 단순 벤치마크 점수보다, 긴 작업 과정에서 나온 실패/회복/협업/파일 사용 패턴을 skill이나 model update 신호로 바꾸는 구조가 핵심입니다.</p>
+          <p>Hermes식 작업 흐름 관점에서는 이 논문이 “스킬을 어떻게 대규모 경험 데이터에서 만들고 검증할 수 있는가”에 대한 직접적인 힌트를 줍니다. 단순 벤치마크 점수보다, 긴 작업 과정에서 나온 실패·회복·협업·파일 사용 패턴을 스킬이나 모델 업데이트 신호로 바꾸는 구조가 핵심입니다.</p>
         </div>
         <div class="stat-grid">
           {metrics.map(([label, value, note]) => (
@@ -83,211 +84,211 @@ const figureIndex = [
           ))}
         </div>
         <div class="figure-card">
-          <img src={`${base}images/papers/synthetic-computers/method-overview.svg`} alt="Synthetic Computers at Scale method overview" />
-          <div class="figure-caption">논문 흐름을 Hermes Paper Lab용으로 재구성한 source-grounded visual map. 원문 Figure 1, Figure 2, Figure 9 및 Table 3/4의 핵심 숫자를 반영했습니다.</div>
+          <img src={`${base}images/papers/synthetic-computers/method-overview.svg`} alt="대규모 합성 컴퓨터 방법론 개요" />
+          <div class="figure-caption">논문 흐름을 Hermes Paper Lab용으로 재구성한 원문 근거 시각 지도. 원문 그림 1, 그림 2, 그림 9 및 표 3/4의 핵심 숫자를 반영했습니다.</div>
         </div>
       </section>
 
       <section class="paper-section" id="abstract">
-        <h2>Abstract</h2>
+        <h2>초록</h2>
         <p>
-          초록은 문제를 이렇게 잡습니다: 실제 생산성 업무는 개인별 컴퓨터 환경에 강하게 의존하며, 업무 맥락은 디렉터리 구조와 문서·스프레드시트·발표자료 같은 artifact에 저장되어 있습니다. 따라서 장기 생산성 task를 synthetic data로 만들려면 “작업 하나”만 만드는 것이 아니라, 그 작업이 발생하는 사용자별 컴퓨터 환경까지 합성해야 합니다.
+          초록은 문제를 이렇게 잡습니다. 실제 생산성 업무는 개인별 컴퓨터 환경에 강하게 의존하며, 업무 맥락은 디렉터리 구조와 문서·스프레드시트·발표자료 같은 산출물에 저장되어 있습니다. 따라서 장기 생산성 작업을 합성 데이터로 만들려면 “작업 하나”만 만드는 것이 아니라, 그 작업이 발생하는 사용자별 컴퓨터 환경까지 합성해야 합니다.
         </p>
         <p>
-          저자들의 방법은 두 단계입니다. 먼저 realistic folder hierarchy와 content-rich artifacts를 가진 synthetic computer를 만들고, 그 위에서 long-horizon simulation을 실행합니다. setup agent는 사용자와 컴퓨터 상태에 맞는 생산성 목표를 만들고, work agent는 그 사용자인 것처럼 파일을 탐색하고, 협업자와 조율하고, 여러 전문 deliverable을 만들어 목표를 완수합니다.
+          저자들의 방법은 두 단계입니다. 먼저 현실적인 폴더 구조와 내용이 채워진 산출물을 가진 합성 컴퓨터를 만들고, 그 위에서 장기 시뮬레이션을 실행합니다. 설정 에이전트는 사용자와 컴퓨터 상태에 맞는 생산성 목표를 만들고, 작업 에이전트는 그 사용자인 것처럼 파일을 탐색하고, 협업자와 조율하고, 여러 전문 산출물을 만들어 목표를 완수합니다.
         </p>
         <p>
-          초록에서 가장 중요한 수치는 preliminary experiments의 규모입니다. 1,000개 synthetic computers를 만들고 long-horizon simulation을 실행했으며, 각 run은 8시간 이상의 agent runtime과 평균 2,000 turns 이상을 사용합니다. 저자들은 이 trajectory가 agent self-improvement와 agentic reinforcement learning을 위한 process/outcome learning signal이 될 수 있다고 주장합니다.
+          초록에서 가장 중요한 수치는 예비 실험의 규모입니다. 저자들은 1,000개 합성 컴퓨터를 만들고 장기 시뮬레이션을 실행했으며, 각 실행은 8시간 이상의 에이전트 실행 시간과 평균 2,000턴 이상을 사용합니다. 저자들은 이 작업 궤적이 에이전트 자기개선과 에이전트형 강화학습을 위한 과정/결과 학습 신호가 될 수 있다고 주장합니다.
         </p>
-        <p class="source">Source: Abstract, arXiv:2604.28181v1.</p>
+        <p class="source">출처: 초록, arXiv:2604.28181v1.</p>
       </section>
 
       <section class="paper-section" id="intro">
-        <h2>1. Introduction</h2>
+        <h2>1. 서론</h2>
         <p>
-          Introduction은 AI assistant가 대화형 도우미에서 repository-grounded coding agent, 그리고 전체 컴퓨터 환경에 grounding되는 long-horizon agent로 이동하고 있다는 배경에서 시작합니다. 저자들은 생산성 업무가 정보 수집, 증거 분석, 협업, 문서/보고서/발표자료 생성처럼 긴 시간과 많은 맥락을 요구한다고 봅니다.
+          서론은 AI 도우미가 대화형 도우미에서 저장소 기반 코딩 에이전트로, 다시 전체 컴퓨터 환경에 근거를 두는 장기 작업 에이전트로 이동하고 있다는 배경에서 시작합니다. 저자들은 생산성 업무가 정보 수집, 증거 분석, 협업, 문서/보고서/발표자료 생성처럼 긴 시간과 많은 맥락을 요구한다고 봅니다.
         </p>
         <p>
-          핵심 문제는 real trajectory가 private computer environment에 묶여 있다는 점입니다. 실제 사용자의 파일, 기업 문서, 프로젝트 상태, 상호작용 기록은 민감하고 비공개라서 대규모 수집이 어렵습니다. 그래서 synthetic data가 필요하지만, 단순 task prompt를 합성하면 현실성이 낮은 toy workflow가 되기 쉽습니다.
+          핵심 문제는 실제 작업 궤적이 비공개 컴퓨터 환경에 묶여 있다는 점입니다. 실제 사용자의 파일, 기업 문서, 프로젝트 상태, 상호작용 기록은 민감하고 비공개라서 대규모 수집이 어렵습니다. 그래서 합성 데이터가 필요하지만, 단순 작업 지시문만 합성하면 현실성이 낮은 장난감식 작업 흐름이 되기 쉽습니다.
         </p>
-        <h3>저자들이 제시한 세 가지 guiding principles</h3>
+        <h3>저자들이 제시한 세 가지 설계 원칙</h3>
         <ul>
-          <li><strong>Productivity work is context-heavy.</strong> 생산성 업무는 기존 파일, 프로젝트 이력, 협업자 피드백, 진행 중인 work state에 기반합니다.</li>
-          <li><strong>Key challenge is rich user context over long horizons.</strong> agent가 장기간에 걸쳐 사용자 파일과 히스토리를 제대로 활용해야 합니다.</li>
-          <li><strong>Synthetic data must synthesize the context, not only the task.</strong> task만 만들면 현실과 멀어지고, 사용자별 환경까지 만들어야 합니다.</li>
+          <li><strong>생산성 업무는 맥락 의존적입니다.</strong> 생산성 업무는 기존 파일, 프로젝트 이력, 협업자 피드백, 진행 중인 작업 상태에 기반합니다.</li>
+          <li><strong>핵심 과제는 장기간에 걸친 풍부한 사용자 맥락입니다.</strong> 에이전트가 장기간에 걸쳐 사용자 파일과 이력을 제대로 활용해야 합니다.</li>
+          <li><strong>합성 데이터는 작업뿐 아니라 맥락도 합성해야 합니다.</strong> 작업만 만들면 현실과 멀어지고, 사용자별 환경까지 만들어야 합니다.</li>
         </ul>
         <p>
-          논문의 contribution은 여기서 정리됩니다. Persona pool에서 출발해 LLM으로 user-specific computer를 만들고, 각 컴퓨터 위에서 약 한 달 분량의 work simulation을 실행합니다. 그 결과 trajectory는 search, planning, revision, collaboration, failure recovery 같은 process signal과 final deliverable quality라는 outcome signal을 동시에 제공합니다.
+          논문의 기여는 여기서 정리됩니다. 페르소나 풀에서 출발해 LLM으로 사용자별 컴퓨터를 만들고, 각 컴퓨터 위에서 약 한 달 분량의 업무 시뮬레이션을 실행합니다. 그 결과 작업 궤적에는 검색, 계획, 수정, 협업, 실패 회복 같은 과정 신호와 최종 산출물 품질이라는 결과 신호가 동시에 남습니다.
         </p>
-        <p class="source">Source: Section 1, Figure 1.</p>
+        <p class="source">출처: 1장, 그림 1.</p>
       </section>
 
       <section class="paper-section" id="creation">
-        <h2>2. Synthetic Computer Creation</h2>
+        <h2>2. 합성 컴퓨터 생성</h2>
         <p>
-          Section 2는 synthetic computer를 어떻게 만드는지 설명합니다. 전체 흐름은 persona → detailed user profile → filesystem planning → artifact creation입니다. 원문 Figure 2는 이 과정을 한 장으로 보여줍니다.
+          2장은 합성 컴퓨터를 어떻게 만드는지 설명합니다. 전체 흐름은 페르소나 → 상세 사용자 프로필 → 파일시스템 계획 → 산출물 생성입니다. 원문 그림 2는 이 과정을 한 장으로 보여줍니다.
         </p>
-        <h3>2.1 Persona-driven user profiles</h3>
+        <h3>2.1 페르소나 기반 사용자 프로필</h3>
         <p>
-          시작점은 persona입니다. 하지만 persona만으로는 어떤 파일이 컴퓨터에 있어야 하는지 결정할 수 없으므로, 저자들은 persona를 detailed user profile로 확장합니다. 이 profile에는 identity, occupation, organization, career stage, responsibilities, recent work history, current projects, collaborators, common work products가 들어갑니다.
-        </p>
-        <p>
-          흥미로운 부분은 파일시스템 생성에 직접 필요한 행동 특성까지 넣는다는 점입니다. 예를 들어 technical level, computer usage level, tidiness, preferred tools, document habits, spreadsheet usage, attachment-saving behavior, naming preferences, organization style 등이 포함됩니다. 즉 “이 사용자는 어떤 일을 하는가”뿐 아니라 “이 사용자는 파일을 어떻게 저장하고 이름 붙이는가”까지 모델링합니다.
-        </p>
-        <h3>2.2 Computer environment planning</h3>
-        <p>
-          User profile이 만들어지면 filesystem policy와 filesystem plan을 생성합니다. Policy는 system start time, drive layout, default paths, storage patterns, organization style, naming style, usage patterns를 지정합니다. 이후 file inventory는 logical path, artifact type, description, timestamp, origin, content mode를 포함합니다.
+          시작점은 페르소나입니다. 하지만 페르소나만으로는 어떤 파일이 컴퓨터에 있어야 하는지 결정할 수 없으므로, 저자들은 페르소나를 상세 사용자 프로필로 확장합니다. 이 프로필에는 정체성, 직업, 조직, 경력 단계, 책임 범위, 최근 업무 이력, 현재 프로젝트, 협업자, 자주 만드는 업무 산출물이 들어갑니다.
         </p>
         <p>
-          중요한 장치는 directed dependency graph입니다. 실제 컴퓨터의 파일들은 독립 샘플이 아니라, 한 파일이 다른 파일을 참조하거나, 요약하거나, revise하거나, archive에서 파생됩니다. 이 그래프는 그런 관계를 명시해 downstream artifact가 predecessor artifact를 참고하도록 만듭니다.
+          흥미로운 부분은 파일시스템 생성에 직접 필요한 행동 특성까지 넣는다는 점입니다. 예를 들어 기술 숙련도, 컴퓨터 사용 수준, 정리 성향, 선호 도구, 문서 작성 습관, 스프레드시트 사용 방식, 첨부파일 저장 습관, 이름 붙이는 방식, 정리 스타일 등이 포함됩니다. 즉 “이 사용자는 어떤 일을 하는가”뿐 아니라 “이 사용자는 파일을 어떻게 저장하고 이름 붙이는가”까지 모델링합니다.
         </p>
-        <h3>2.3 Artifact creation</h3>
+        <h3>2.2 컴퓨터 환경 계획</h3>
         <p>
-          계획이 끝나면 logical path를 portable physical path로 매핑하고, parent directory를 만든 뒤, planned files를 content-rich artifacts로 채웁니다. Public web-downloadable artifact는 먼저 다운로드를 시도하고 실패하면 synthesis로 fallback합니다. 그 외 사용자별 artifact는 LLM agent와 artifact-creation tools/skills로 생성합니다.
+          사용자 프로필이 만들어지면 파일시스템 정책과 파일시스템 계획을 생성합니다. 정책은 시스템 시작 시점, 드라이브 구성, 기본 경로, 저장 패턴, 정리 스타일, 이름 규칙, 사용 패턴을 지정합니다. 이후 파일 목록은 논리 경로, 산출물 유형, 설명, 타임스탬프, 출처, 내용 생성 방식을 포함합니다.
+        </p>
+        <p>
+          중요한 장치는 방향성 의존 그래프입니다. 실제 컴퓨터의 파일들은 독립 샘플이 아니라, 한 파일이 다른 파일을 참조하거나, 요약하거나, 수정하거나, 아카이브에서 파생됩니다. 이 그래프는 그런 관계를 명시해 후속 산출물이 선행 산출물을 참고하도록 만듭니다.
+        </p>
+        <h3>2.3 산출물 생성</h3>
+        <p>
+          계획이 끝나면 논리 경로를 이동 가능한 물리 경로로 매핑하고, 상위 디렉터리를 만든 뒤, 계획된 파일을 내용이 채워진 산출물로 채웁니다. 공개 웹 다운로드 가능 산출물은 먼저 다운로드를 시도하고 실패하면 합성 생성으로 대체합니다. 그 외 사용자별 산출물은 LLM 에이전트와 산출물 생성 도구/스킬로 생성합니다.
         </p>
         <div class="warning callout">
           <strong>주의할 점</strong>
-          <p>원문 footnote는 현재 pipeline이 planning 단계에서 public file의 실제 다운로드 가능 여부를 미리 검증하지 않고, 나중에 실패하면 synthesis로 fallback한다고 밝힙니다. 즉 synthetic computer의 “realism”은 강하지만, artifact provenance와 factual grounding은 pipeline 품질에 따라 흔들릴 수 있습니다.</p>
+          <p>원문 각주는 현재 파이프라인이 계획 단계에서 공개 파일의 실제 다운로드 가능 여부를 미리 검증하지 않고, 나중에 실패하면 합성 생성으로 대체한다고 밝힙니다. 즉 합성 컴퓨터의 “현실감”은 강하지만, 산출물 출처와 사실 근거는 파이프라인 품질에 따라 흔들릴 수 있습니다.</p>
         </div>
-        <p class="source">Source: Section 2, Figure 2, Figure 3.</p>
+        <p class="source">출처: 2장, 그림 2, 그림 3.</p>
       </section>
 
       <section class="paper-section" id="simulation">
-        <h2>3. Long-Horizon Productivity Simulation</h2>
+        <h2>3. 장기 생산성 시뮬레이션</h2>
         <p>
-          Section 3은 synthetic computer 위에서 장기 업무를 어떻게 시뮬레이션하는지 설명합니다. 두 agent가 나뉘어 동작합니다. setup agent는 사용자에게 맞는 productivity objectives와 collaboration setting을 만들고, work agent는 그 사용자인 것처럼 실제 파일을 탐색하고 작업합니다.
+          3장은 합성 컴퓨터 위에서 장기 업무를 어떻게 시뮬레이션하는지 설명합니다. 두 에이전트가 나뉘어 동작합니다. 설정 에이전트는 사용자에게 맞는 생산성 목표와 협업 설정을 만들고, 작업 에이전트는 그 사용자인 것처럼 실제 파일을 탐색하고 작업합니다.
         </p>
-        <h3>3.1 Setup: productivity objectives + collaboration</h3>
+        <h3>3.1 설정: 생산성 목표 + 협업</h3>
         <p>
-          Setup agent는 generic task를 뽑지 않습니다. User profile, current computer state, role, responsibilities, active projects, file inventory, existing artifacts를 보고 “이 사람이 한 달 동안 실제로 할 법한 업무 목표”를 만듭니다. 목표는 여러 deliverable work packages로 표현되며, analysis workbook, internal memo, presentation deck, supporting materials, final PDF package처럼 전문 산출물을 포함할 수 있습니다.
-        </p>
-        <p>
-          또 하나의 핵심은 collaboration setup입니다. 실제 생산성 업무는 요구사항 확인, 데이터 요청, stakeholder preference 파악, feedback 반영이 필요합니다. 그래서 setup agent는 managers, peers, clients, compliance officers, external partners 같은 simulated collaborators를 만들고, role, background, communication style, relevant knowledge, private reference materials를 부여합니다.
-        </p>
-        <h3>3.2 Weekly planning and daily work</h3>
-        <p>
-          Work agent는 user profile, objectives, collaborator descriptions, synthetic computer access를 받고 업무를 수행합니다. 단, collaborator의 private reference materials는 나중에 공유되기 전까지 볼 수 없습니다. 이는 실제 협업처럼 “처음부터 모든 정보가 주어지지 않는” 상황을 만들기 위한 설계입니다.
+          설정 에이전트는 일반 작업을 뽑지 않습니다. 사용자 프로필, 현재 컴퓨터 상태, 역할, 책임, 진행 중인 프로젝트, 파일 목록, 기존 산출물을 보고 “이 사람이 한 달 동안 실제로 할 법한 업무 목표”를 만듭니다. 목표는 여러 산출물 작업 패키지로 표현되며, 분석 워크북, 내부 메모, 발표 자료, 보조 자료, 최종 PDF 패키지처럼 전문 산출물을 포함할 수 있습니다.
         </p>
         <p>
-          Simulation은 weekly planning과 daily execution으로 진행됩니다. 매주 초 agent는 남은 deliverables, 진행 상황, 파일 상태, collaboration needs를 바탕으로 일별 계획을 세우고, 각 workday는 별도 agent session으로 실행됩니다. 매일 시작할 때 activity log와 computer state, collaborator replies를 복원하고, 하루가 끝나면 새 파일, 수정된 artifact, 협업 메시지, activity history가 기록됩니다.
+          또 하나의 핵심은 협업 설정입니다. 실제 생산성 업무는 요구사항 확인, 데이터 요청, 이해관계자 선호 파악, 피드백 반영이 필요합니다. 그래서 설정 에이전트는 관리자, 동료, 고객, 컴플라이언스 담당자, 외부 파트너 같은 시뮬레이션된 협업자를 만들고, 역할, 배경, 소통 스타일, 관련 지식, 비공개 참고 자료를 부여합니다.
+        </p>
+        <h3>3.2 주간 계획과 일일 업무</h3>
+        <p>
+          작업 에이전트는 사용자 프로필, 목표, 협업자 설명, 합성 컴퓨터 접근 권한을 받고 업무를 수행합니다. 단, 협업자의 비공개 참고 자료는 나중에 공유되기 전까지 볼 수 없습니다. 이는 실제 협업처럼 “처음부터 모든 정보가 주어지지 않는” 상황을 만들기 위한 설계입니다.
         </p>
         <p>
-          이 설계 덕분에 trajectory에는 단순 final answer가 아니라, planning, filesystem grounding, reading existing artifacts, creating/revising files, communication, recovery behavior가 모두 남습니다.
+          시뮬레이션은 주간 계획과 일일 실행으로 진행됩니다. 매주 초 에이전트는 남은 산출물, 진행 상황, 파일 상태, 협업 필요사항을 바탕으로 일별 계획을 세우고, 각 업무일은 별도 에이전트 세션으로 실행됩니다. 매일 시작할 때 활동 로그, 컴퓨터 상태, 협업자 답변을 복원하고, 하루가 끝나면 새 파일, 수정된 산출물, 협업 메시지, 활동 이력이 기록됩니다.
         </p>
-        <p class="source">Source: Section 3.</p>
+        <p>
+          이 설계 덕분에 작업 궤적에는 단순 최종 답변이 아니라, 계획, 파일시스템 근거화, 기존 산출물 읽기, 파일 생성/수정, 소통, 회복 행동이 모두 남습니다.
+        </p>
+        <p class="source">출처: 3장.</p>
       </section>
 
       <section class="paper-section" id="experiments">
-        <h2>4. Experiments</h2>
-        <h3>4.1 Experimental setup</h3>
+        <h2>4. 실험</h2>
+        <h3>4.1 실험 설정</h3>
         <p>
-          실험 runtime은 Claude Code SDK입니다. 특별한 언급이 없으면 agents는 Claude Sonnet 4.6으로 구동되고, long-horizon simulation setup에는 Claude Opus 4.6이 쓰입니다. Artifact creation에는 Anthropic skills와 MiniMax의 open-source Office artifact skills(minimax-docx, minimax-xlsx, pptx-generator, minimax-pdf)가 사용됩니다.
+          실험 실행 환경은 Claude Code SDK입니다. 특별한 언급이 없으면 에이전트는 Claude Sonnet 4.6으로 구동되고, 장기 시뮬레이션 설정에는 Claude Opus 4.6이 쓰입니다. 산출물 생성에는 Anthropic 스킬과 MiniMax의 오픈소스 Office 산출물 스킬(minimax-docx, minimax-xlsx, pptx-generator, minimax-pdf)이 사용됩니다.
         </p>
-        <h3>4.2 Results: synthetic computers are non-trivial</h3>
+        <h3>4.2 결과: 합성 컴퓨터는 단순한 장난감 환경이 아님</h3>
         <p>
-          Table 1은 synthetic computer가 simulation 전후 어떻게 변하는지 보여줍니다. 평균 파일 수는 111.6개에서 197.4개로 증가하고, directory 수는 30.4개에서 36.0개로 증가합니다. 반면 average directory depth는 3.39에서 3.40으로 거의 유지됩니다. 저자들은 이것을 agent가 무작위로 비현실적 디렉터리를 만들기보다 기존 organization 안에서 artifact를 만들고 수정한다는 증거로 해석합니다.
+          표 1은 합성 컴퓨터가 시뮬레이션 전후 어떻게 변하는지 보여줍니다. 평균 파일 수는 111.6개에서 197.4개로 증가하고, 디렉터리 수는 30.4개에서 36.0개로 증가합니다. 반면 평균 디렉터리 깊이는 3.39에서 3.40으로 거의 유지됩니다. 저자들은 이것을 에이전트가 무작위로 비현실적 디렉터리를 만들기보다 기존 정리 구조 안에서 산출물을 만들고 수정한다는 증거로 해석합니다.
         </p>
         <p>
-          Figure 5와 Table 2는 artifact가 placeholder가 아니라 productivity artifact 중심임을 보여줍니다. DOCX, XLSX, PDF, PPTX가 전체 파일의 67.8%를 차지하고, DOCX alone이 34.8%입니다. PPTX와 PDF의 file size도 상당해 content-rich artifact임을 뒷받침합니다.
+          그림 5와 표 2는 산출물이 빈 자리표시자가 아니라 생산성 산출물 중심임을 보여줍니다. DOCX, XLSX, PDF, PPTX가 전체 파일의 67.8%를 차지하고, DOCX만으로도 34.8%입니다. PPTX와 PDF의 파일 크기도 상당해 내용이 채워진 산출물임을 뒷받침합니다.
         </p>
         <table class="metric-table">
-          <thead><tr><th>Item</th><th>Reported values</th><th>Interpretation</th></tr></thead>
+          <thead><tr><th>항목</th><th>보고된 값</th><th>해석</th></tr></thead>
           <tbody>
-            <tr><td>Table 1</td><td>Files/computer: 111.6 → 197.4; directories: 30.4 → 36.0</td><td>시뮬레이션이 기존 환경을 확장함</td></tr>
-            <tr><td>Table 3</td><td>Total turns mean 2,272; total runtime mean 8.59h</td><td>one-shot task가 아니라 장기 agent run</td></tr>
-            <tr><td>Collaboration</td><td>5.5 collaborators; 31 communications mean</td><td>협업/피드백이 trajectory에 포함됨</td></tr>
+            <tr><td>표 1</td><td>컴퓨터당 파일 수: 111.6 → 197.4; 디렉터리 수: 30.4 → 36.0</td><td>시뮬레이션이 기존 환경을 확장함</td></tr>
+            <tr><td>표 3</td><td>전체 턴 평균 2,272; 전체 실행 시간 평균 8.59시간</td><td>한 번에 끝나는 작업이 아니라 장기 에이전트 실행</td></tr>
+            <tr><td>협업</td><td>협업자 5.5명; 소통 31회 평균</td><td>협업/피드백이 작업 궤적에 포함됨</td></tr>
           </tbody>
         </table>
-        <h3>4.2.1 Final deliverable evaluation</h3>
+        <h3>4.2.1 최종 산출물 평가</h3>
         <p>
-          Final deliverable은 computer와 productivity objectives마다 생성한 rubric으로 평가합니다. 한 run의 rubric이 너무 좁아지는 것을 막기 위해 같은 simulation setting을 5회 실행하고, 각 run에서 draft rubric을 만든 뒤 final rubric으로 merge합니다. Judge는 Claude Code SDK agent + Claude Opus 4.6이며, deliverable을 직접 읽고 필요하면 screenshot으로 visual quality까지 확인합니다.
+          최종 산출물은 컴퓨터와 생산성 목표마다 생성한 채점 기준으로 평가합니다. 한 실행의 채점 기준이 너무 좁아지는 것을 막기 위해 같은 시뮬레이션 설정을 5회 실행하고, 각 실행에서 초안 채점 기준을 만든 뒤 최종 채점 기준으로 병합합니다. 평가자는 Claude Code SDK 에이전트 + Claude Opus 4.6이며, 산출물을 직접 읽고 필요하면 스크린샷으로 시각 품질까지 확인합니다.
         </p>
         <p>
-          100 synthetic computers에 적용한 결과, 대부분의 score는 60–80% 구간에 분포합니다. 저자들은 work agent가 많은 deliverable을 완성할 수 있지만 아직 개선 여지가 크다고 해석합니다.
+          100개 합성 컴퓨터에 적용한 결과, 대부분의 점수는 60–80% 구간에 분포합니다. 저자들은 작업 에이전트가 많은 산출물을 완성할 수 있지만 아직 개선 여지가 크다고 해석합니다.
         </p>
-        <h3>4.2.2 Full trajectory analysis</h3>
+        <h3>4.2.2 전체 작업 궤적 분석</h3>
         <p>
-          이 논문의 핵심은 final file만 보지 않는다는 점입니다. trajectory-level analysis는 agent가 어떻게 planning하고, filesystem을 탐색하고, 기존 artifact를 사용하고, 협업자와 조율하고, 중간 파일을 revise했는지를 봅니다. 최종 산출물만 보면 그럴듯하지만 grounding이 약했거나 collaborator feedback을 놓쳤거나 불필요한 rework가 많았던 경우를 잡아내기 위해서입니다.
+          이 논문의 핵심은 최종 파일만 보지 않는다는 점입니다. 작업 궤적 수준 분석은 에이전트가 어떻게 계획하고, 파일시스템을 탐색하고, 기존 산출물을 사용하고, 협업자와 조율하고, 중간 파일을 수정했는지를 봅니다. 최종 산출물만 보면 그럴듯하지만 근거화가 약했거나 협업자 피드백을 놓쳤거나 불필요한 재작업이 많았던 경우를 잡아내기 위해서입니다.
         </p>
-        <h3>4.3 In-domain evaluation</h3>
+        <h3>4.3 동일 영역 평가</h3>
         <p>
-          1,000 synthetic computers를 900 training / 100 held-out test로 나눕니다. 여기서 “training”은 model weight update가 아니라, retrospective report에서 experience item을 뽑고 occupation별 skill을 만드는 split입니다. 각 occupation group에서 useful work patterns, lessons, warnings, common failure modes를 frequency-ranked list로 만들고, skill creator가 occupation-specific skill을 작성합니다.
-        </p>
-        <p>
-          결과는 Table 4에 정리됩니다. Baseline mean score는 61.6%, skill-augmented는 68.6%로 +7.0 percentage points 개선됩니다. 100개 held-out computer 중 83개에서 skill-augmented agent가 baseline보다 좋았습니다. Figure 7은 training computer 수가 10, 100, 500, 900으로 커질수록 skill win rate가 64%, 75%, 83%로 증가한다는 scaling trend를 보여줍니다.
-        </p>
-        <h3>4.4 Out-of-domain evaluation</h3>
-        <p>
-          저자들은 GDPVal 220 tasks로 out-of-domain transfer도 평가합니다. Table 5는 두 setting의 차이를 보여줍니다. 이 논문 setting은 평균 13.8 reference files와 112 computer files, 4.09 deliverables, 2,272 turns, 8.59 hours를 사용합니다. GDPVal은 평균 1.18 reference files, 0 computer files, 1.63 deliverables, 31 turns, 17 minutes입니다.
+          1,000개 합성 컴퓨터를 900개 학습용 / 100개 검증용 테스트로 나눕니다. 여기서 “학습용”은 모델 가중치 업데이트가 아니라, 회고 보고서에서 경험 항목을 뽑고 직업별 스킬을 만드는 분할입니다. 각 직업 그룹에서 유용한 업무 패턴, 교훈, 경고, 공통 실패 양상을 빈도순 목록으로 만들고, 스킬 생성기가 직업별 스킬을 작성합니다.
         </p>
         <p>
-          Figure 8에서 Sonnet setting은 skill-augmented agent가 105 tasks에서 이기고 67 tasks에서 졌으며, sign test 기준 p=0.002(one-sided), p=0.005(two-sided)로 유의하다고 보고됩니다. 같은 skills는 Haiku와 Opus에도 positive cross-model transfer를 보이지만 gain은 더 약합니다.
+          결과는 표 4에 정리됩니다. 기준선 평균 점수는 61.6%, 스킬 제공 조건은 68.6%로 +7.0%p 개선됩니다. 100개 검증용 컴퓨터 중 83개에서 스킬 제공 에이전트가 기준선보다 좋았습니다. 그림 7은 학습용 컴퓨터 수가 10, 100, 500, 900으로 커질수록 스킬 승률이 64%, 75%, 83%로 증가한다는 규모 확장 추세를 보여줍니다.
         </p>
-        <p class="source">Source: Section 4, Figure 4–8, Table 1–5.</p>
+        <h3>4.4 외부 영역 평가</h3>
+        <p>
+          저자들은 GDPVal 220개 작업으로 외부 영역 전이도 평가합니다. 표 5는 두 설정의 차이를 보여줍니다. 이 논문 설정은 평균 13.8개 참고 파일과 112개 컴퓨터 파일, 4.09개 산출물, 2,272턴, 8.59시간을 사용합니다. GDPVal은 평균 1.18개 참고 파일, 0개 컴퓨터 파일, 1.63개 산출물, 31턴, 17분입니다.
+        </p>
+        <p>
+          그림 8에서 Sonnet 설정은 스킬 제공 에이전트가 105개 작업에서 이기고 67개 작업에서 졌으며, sign test 기준 p=0.002(단측), p=0.005(양측)로 유의하다고 보고됩니다. 같은 스킬은 Haiku와 Opus에도 긍정적인 모델 간 전이를 보이지만 개선폭은 더 약합니다.
+        </p>
+        <p class="source">출처: 4장, 그림 4–8, 표 1–5.</p>
       </section>
 
       <section class="paper-section" id="discussion">
-        <h2>5. Discussion</h2>
-        <h3>5.1 Toward self-improving productivity agents</h3>
+        <h2>5. 논의</h2>
+        <h3>5.1 자기개선 생산성 에이전트를 향해</h3>
         <p>
-          Discussion의 중심 주장은 synthetic computers가 private user data 없이 realistic long-horizon simulations를 대량 실행할 수 있게 하고, 그 trajectory에서 process/outcome signal을 얻어 agent를 self-improve할 수 있다는 것입니다. Figure 9는 simulation → retrospective signals → skills → improved behavior → possible model-weight update로 이어지는 loop를 보여줍니다.
+          논의의 중심 주장은 합성 컴퓨터가 비공개 사용자 데이터 없이 현실적인 장기 시뮬레이션을 대량 실행할 수 있게 하고, 그 작업 궤적에서 과정/결과 신호를 얻어 에이전트를 자기개선할 수 있다는 것입니다. 그림 9는 시뮬레이션 → 회고 신호 → 스킬 → 개선된 행동 → 가능한 모델 가중치 업데이트로 이어지는 루프를 보여줍니다.
         </p>
         <p>
-          저자들은 skill-based improvement를 중간 단계로 봅니다. Skill은 빠르게 iterate할 수 있고, inspect 가능하며, extracted experience가 실제로 agent behavior를 개선하는지 검증하기 좋습니다. 다만 skill set이 계속 커지면 external instruction으로 들고 다니기 어려우므로, 궁극적으로는 이런 signal을 model update에 반영하는 방향을 제안합니다.
+          저자들은 스킬 기반 개선을 중간 단계로 봅니다. 스킬은 빠르게 반복 개선할 수 있고, 검토 가능하며, 추출된 경험이 실제로 에이전트 행동을 개선하는지 검증하기 좋습니다. 다만 스킬 묶음이 계속 커지면 외부 지시문으로 들고 다니기 어려우므로, 궁극적으로는 이런 신호를 모델 업데이트에 반영하는 방향을 제안합니다.
         </p>
-        <h3>5.2 Scaling with simulation and model capability</h3>
+        <h3>5.2 시뮬레이션과 모델 역량에 따른 확장</h3>
         <p>
-          논문은 synthetic computer가 scale될수록 세 방향으로 좋아질 수 있다고 봅니다. 더 많은 simulation은 computer environment를 더 풍부하고 사용자별로 차별화합니다. 더 강한 agent는 더 좋은 artifact와 workflow를 만듭니다. 더 강한 model은 trajectory에서 더 좋은 lesson과 failure mode를 추출합니다.
+          논문은 합성 컴퓨터가 확장될수록 세 방향으로 좋아질 수 있다고 봅니다. 더 많은 시뮬레이션은 컴퓨터 환경을 더 풍부하고 사용자별로 차별화합니다. 더 강한 에이전트는 더 좋은 산출물과 작업 흐름을 만듭니다. 더 강한 모델은 작업 궤적에서 더 좋은 교훈과 실패 양상을 추출합니다.
         </p>
-        <h3>5.3 Toward scalable productive intelligence</h3>
+        <h3>5.3 확장 가능한 생산적 지능을 향해</h3>
         <p>
-          마지막 discussion은 “task를 많이 만드는 것”보다 “생산적 일이 일어나는 realistic context를 scale하는 것”이 중요하다고 주장합니다. Persona는 큰 규모로 샘플링 가능하고, 충분한 compute가 있다면 다양한 직업, 조직, workflow, work style, productivity needs를 포괄하는 synthetic computers를 만들 수 있습니다.
+          마지막 논의는 “작업을 많이 만드는 것”보다 “생산적 일이 일어나는 현실적인 맥락을 확장하는 것”이 중요하다고 주장합니다. 페르소나는 큰 규모로 샘플링 가능하고, 충분한 연산 자원이 있다면 다양한 직업, 조직, 작업 흐름, 업무 스타일, 생산성 요구를 포괄하는 합성 컴퓨터를 만들 수 있습니다.
         </p>
         <p>
-          이 관점에서 synthetic computer는 agent가 planning, grounding, coordination, revision, recovery를 연습하는 practice ground가 됩니다. 또한 computer-use agents처럼 실제 computer state, files, applications, histories가 필요한 연구에도 연결될 수 있습니다.
+          이 관점에서 합성 컴퓨터는 에이전트가 계획, 근거화, 조율, 수정, 회복을 연습하는 연습장이 됩니다. 또한 컴퓨터 사용 에이전트처럼 실제 컴퓨터 상태, 파일, 애플리케이션, 이력이 필요한 연구에도 연결될 수 있습니다.
         </p>
-        <p class="source">Source: Section 5, Figure 9.</p>
+        <p class="source">출처: 5장, 그림 9.</p>
       </section>
 
       <section class="paper-section" id="conclusion">
-        <h2>6. Conclusion and Future Work</h2>
+        <h2>6. 결론과 향후 과제</h2>
         <p>
-          결론은 synthetic computers가 realistic user-specific computer environments를 만들고, 이를 long-horizon productivity simulation의 기반으로 사용한다는 방법론을 요약합니다. 실험은 이런 simulation이 held-out synthetic computers와 external productivity benchmark에서 agent를 개선하는 useful experiential signals를 만든다는 것을 보여줍니다.
+          결론은 합성 컴퓨터가 현실적인 사용자별 컴퓨터 환경을 만들고, 이를 장기 생산성 시뮬레이션의 기반으로 사용한다는 방법론을 요약합니다. 실험은 이런 시뮬레이션이 검증용 합성 컴퓨터와 외부 생산성 벤치마크에서 에이전트를 개선하는 유용한 경험 신호를 만든다는 것을 보여줍니다.
         </p>
-        <h3>Future directions</h3>
+        <h3>향후 방향</h3>
         <ul>
-          <li><strong>Artifact design personalization:</strong> 현재 artifact는 role/project/file에 grounded되어 있지만 visual style과 formatting이 여전히 너무 균일할 수 있습니다.</li>
-          <li><strong>Natural noise and accumulated history:</strong> 실제 컴퓨터에는 temporary downloads, duplicate drafts, abandoned files, screenshots, outdated materials 같은 잡음이 많습니다.</li>
-          <li><strong>Dynamic collaboration:</strong> 현재 collaborators는 주로 reactive합니다. 실제 협업자는 자기 업무, 파일, 회의, 이메일, deadline, evolving state를 가집니다.</li>
+          <li><strong>산출물 디자인 개인화:</strong> 현재 산출물은 역할/프로젝트/파일에 근거되어 있지만 시각 스타일과 서식이 여전히 너무 균일할 수 있습니다.</li>
+          <li><strong>자연스러운 잡음과 누적 이력:</strong> 실제 컴퓨터에는 임시 다운로드, 중복 초안, 버려진 파일, 스크린샷, 오래된 자료 같은 잡음이 많습니다.</li>
+          <li><strong>동적인 협업:</strong> 현재 협업자는 주로 반응형입니다. 실제 협업자는 자기 업무, 파일, 회의, 이메일, 마감, 변화하는 상태를 가집니다.</li>
         </ul>
         <p>
-          저자들은 이 방향들이 어렵지만 현재 model/agent capability로 달성 가능하며, rich evolving human context와 high-value productivity work 사이의 bridge가 될 수 있다고 봅니다.
+          저자들은 이 방향들이 어렵지만 현재 모델/에이전트 역량으로 달성 가능하며, 풍부하게 변화하는 인간 맥락과 고부가가치 생산성 업무 사이의 다리가 될 수 있다고 봅니다.
         </p>
-        <p class="source">Source: Section 6.</p>
+        <p class="source">출처: 6장.</p>
       </section>
 
       <section class="paper-section" id="appendix">
-        <h2>Appendix A — Retrospective Analysis Report</h2>
+        <h2>부록 A — 회고 분석 보고서</h2>
         <p>
-          Appendix A는 trajectory-level analysis가 어떤 형태인지 보여주는 예시입니다. 예시는 <em>win_computer_000000</em>의 retrospective report이며, subject는 Meridian Wealth Partners의 Senior Financial Advisor인 Margaret Elaine Forsythe입니다. 2026-01-05부터 2026-01-30까지 20 working days simulation이며, overall score는 605/846, 즉 71.5%입니다.
+          부록 A는 작업 궤적 수준 분석이 어떤 형태인지 보여주는 예시입니다. 예시는 <em>win_computer_000000</em>의 회고 보고서이며, 대상 인물은 Meridian Wealth Partners의 시니어 재무 어드바이저 Margaret Elaine Forsythe입니다. 2026-01-05부터 2026-01-30까지 20영업일 시뮬레이션이며, 전체 점수는 605/846, 즉 71.5%입니다.
         </p>
         <p>
-          이 report는 다섯 개 deliverable을 분석합니다: VCMM 2026 model portfolio refresh, HNW client onboarding, rebalancing trigger framework, alternatives integration research report, ESG equity overlay recommendation. 장점으로는 upfront planning, collaborator communication cadence, Monte Carlo modeling, delta analysis, rebalancing tool logic이 언급됩니다.
+          이 보고서는 다섯 개 산출물을 분석합니다: VCMM 2026 모델 포트폴리오 갱신, HNW 고객 온보딩, 리밸런싱 트리거 프레임워크, 대체투자 통합 리서치 보고서, ESG 주식 오버레이 추천. 장점으로는 초기 계획, 협업자 소통 리듬, 몬테카를로 모델링, 델타 분석, 리밸런싱 도구 로직이 언급됩니다.
         </p>
         <p>
-          가장 큰 failure mode는 cross-document consistency failure입니다. Portfolio weights, correlation figures, expense ratios, screening thresholds, formula descriptions가 같은 deliverable package 안에서도 문서별로 달랐고, 이 단일 패턴이 대부분의 감점 원인이 됩니다. 또한 simulated collaborator가 지적한 오류를 final submission 전에 반영하지 못하거나, final week에 blank/empty messages를 보내는 등 long-context 또는 planning capacity 문제로 보이는 failure도 기록됩니다.
+          가장 큰 실패 양상은 문서 간 일관성 실패입니다. 포트폴리오 비중, 상관관계 수치, 비용률, 스크리닝 기준값, 수식 설명이 같은 산출물 패키지 안에서도 문서별로 달랐고, 이 단일 패턴이 대부분의 감점 원인이 됩니다. 또한 시뮬레이션 협업자가 지적한 오류를 최종 제출 전에 반영하지 못하거나, 마지막 주에 빈 메시지를 보내는 등 긴 맥락 처리 또는 계획 역량 문제로 보이는 실패도 기록됩니다.
         </p>
         <div class="callout">
-          <strong>이 Appendix가 중요한 이유</strong>
-          <p>이 논문이 말하는 “experience signal”은 추상적 로그가 아니라, 이런 식으로 구체적인 실패 패턴—예: source-of-truth 관리 실패, cross-document consistency 붕괴, collaborator feedback 미반영—을 skill로 바꿀 수 있는 형태입니다. Hermes의 skill-first workflow와 특히 잘 맞는 부분입니다.</p>
+          <strong>이 부록이 중요한 이유</strong>
+          <p>이 논문이 말하는 “경험 신호”는 추상적 로그가 아니라, 이런 식으로 구체적인 실패 패턴—예: 단일 기준 자료 관리 실패, 문서 간 일관성 붕괴, 협업자 피드백 미반영—을 스킬로 바꿀 수 있는 형태입니다. Hermes의 스킬 우선 작업 흐름과 특히 잘 맞는 부분입니다.</p>
         </div>
-        <p class="source">Source: Appendix A, retrospective analysis report example.</p>
+        <p class="source">출처: 부록 A, 회고 분석 보고서 예시.</p>
       </section>
 
       <section class="paper-section" id="index">
-        <h2>Figures, Tables, and Equations Index</h2>
+        <h2>그림, 표, 수식 색인</h2>
         <table class="metric-table">
-          <thead><tr><th>ID</th><th>What it shows / why it matters</th></tr></thead>
+          <thead><tr><th>ID</th><th>무엇을 보여주며 왜 중요한가</th></tr></thead>
           <tbody>
             {figureIndex.map(([id, note]) => <tr><td>{id}</td><td>{note}</td></tr>)}
           </tbody>
@@ -295,25 +296,25 @@ const figureIndex = [
       </section>
 
       <section class="paper-section" id="reading">
-        <h2>My Reading</h2>
-        <h3>Author claims vs. interpretation</h3>
+        <h2>내 해석</h2>
+        <h3>저자 주장과 내 해석</h3>
         <div class="claim-table">
-          <div class="claim-row claim-head"><div>Author claim</div><div>My interpretation</div><div>Confidence</div></div>
-          <div class="claim-row"><div>Synthetic computers can provide realistic long-horizon productivity simulation without private user data.</div><div>방향은 매우 설득력 있지만, artifact factuality와 collaborator realism은 pipeline 품질에 크게 의존합니다.</div><div>High</div></div>
-          <div class="claim-row"><div>Retrospective trajectory signals can be converted into useful occupation-specific skills.</div><div>Hermes의 skill workflow와 직접 연결됩니다. 특히 failure mode를 반복 가능한 checklist/skill로 바꾸는 구조가 강합니다.</div><div>High</div></div>
-          <div class="claim-row"><div>Scaling personas and compute could scale to millions/billions of synthetic user worlds.</div><div>개념적으로 가능하지만 cost, evaluator reliability, synthetic drift, privacy/factual grounding 문제가 커질 수 있습니다.</div><div>Medium</div></div>
+          <div class="claim-row claim-head"><div>저자 주장</div><div>내 해석</div><div>확신도</div></div>
+          <div class="claim-row"><div>합성 컴퓨터는 비공개 사용자 데이터 없이 현실적인 장기 생산성 시뮬레이션을 제공할 수 있다.</div><div>방향은 매우 설득력 있지만, 산출물 사실성과 협업자 현실감은 파이프라인 품질에 크게 의존합니다.</div><div>높음</div></div>
+          <div class="claim-row"><div>작업 궤적의 회고 신호는 유용한 직업별 스킬로 전환될 수 있다.</div><div>Hermes의 스킬 작업 흐름과 직접 연결됩니다. 특히 실패 양상을 반복 가능한 체크리스트/스킬로 바꾸는 구조가 강합니다.</div><div>높음</div></div>
+          <div class="claim-row"><div>페르소나와 연산 자원을 확장하면 수백만/수십억 개의 합성 사용자 세계로 확장할 수 있다.</div><div>개념적으로 가능하지만 비용, 평가자 신뢰성, 합성 데이터 드리프트, 개인정보/사실 근거 문제가 커질 수 있습니다.</div><div>중간</div></div>
         </div>
-        <h3>Implementation ideas</h3>
+        <h3>구현 아이디어</h3>
         <ul>
-          <li><strong>Hermes skill mining:</strong> 장기 작업 로그에서 recurring failure mode를 뽑아 skill/checklist로 변환하는 작은 pipeline을 만들 수 있습니다.</li>
-          <li><strong>Paper-to-project bridge:</strong> 이 논문을 기반으로 “synthetic workspace generator”를 toy version으로 구현해, coding/research agent workflow를 테스트하는 벤치마크를 만들 수 있습니다.</li>
-          <li><strong>Knowledge base extension:</strong> 앞으로 이 사이트에는 각 논문의 section walkthrough뿐 아니라 “Hermes workflow에 적용할 수 있는 skill 후보”를 별도 섹션으로 추가하면 좋습니다.</li>
+          <li><strong>Hermes 스킬 마이닝:</strong> 장기 작업 로그에서 반복되는 실패 양상을 뽑아 스킬/체크리스트로 변환하는 작은 파이프라인을 만들 수 있습니다.</li>
+          <li><strong>논문-프로젝트 연결:</strong> 이 논문을 기반으로 “합성 작업공간 생성기”를 작은 실험 버전으로 구현해, 코딩/리서치 에이전트 작업 흐름을 테스트하는 벤치마크를 만들 수 있습니다.</li>
+          <li><strong>지식베이스 확장:</strong> 앞으로 이 사이트에는 각 논문의 섹션별 해설뿐 아니라 “Hermes 작업 흐름에 적용할 수 있는 스킬 후보”를 별도 섹션으로 추가하면 좋습니다.</li>
         </ul>
-        <h3>What not to overclaim</h3>
+        <h3>과장하지 말아야 할 점</h3>
         <ul>
-          <li>이 논문은 실제 사용자 컴퓨터에서 얻은 trajectory를 대체했다기보다는, synthetic substitute를 제안하고 preliminary evidence를 보인 것입니다.</li>
-          <li>모델 weight를 실제로 업데이트한 결과가 아니라, retrospective에서 뽑은 skills를 agent에게 제공했을 때의 개선을 주로 보여줍니다.</li>
-          <li>Rubric judge와 generated artifact quality가 평가 결과에 영향을 줄 수 있습니다.</li>
+          <li>이 논문은 실제 사용자 컴퓨터에서 얻은 작업 궤적을 대체했다기보다는, 합성 대체물을 제안하고 예비 근거를 보인 것입니다.</li>
+          <li>모델 가중치를 실제로 업데이트한 결과가 아니라, 회고에서 뽑은 스킬을 에이전트에게 제공했을 때의 개선을 주로 보여줍니다.</li>
+          <li>채점 기준 평가자와 생성 산출물 품질이 평가 결과에 영향을 줄 수 있습니다.</li>
         </ul>
       </section>
     </article>

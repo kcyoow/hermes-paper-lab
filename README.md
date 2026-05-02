@@ -1,8 +1,8 @@
 # Hermes Paper Lab
 
-A GitHub Pages knowledge base for full-paper walkthroughs. Each paper page is designed to preserve the whole paper flow from abstract through conclusion/appendix, while keeping the writing readable as a guided Korean walkthrough.
+논문 전체 흐름을 따라 읽는 GitHub Pages 지식베이스입니다. 각 논문 페이지는 초록부터 결론/부록까지 논문 흐름을 보존하면서, 한국어 가이드 해설로 읽기 쉽게 정리합니다.
 
-## Commands
+## 명령어
 
 ```bash
 npm install
@@ -10,13 +10,13 @@ npm run build
 npm run dev
 ```
 
-## Content Rule
+## 작성 규칙
 
-Do **not** collapse papers into short summaries. For every paper page:
+논문을 짧은 요약으로 압축하지 않습니다. 모든 논문 페이지는 다음 규칙을 지킵니다.
 
-1. Extract the full paper.
-2. Preserve section order.
-3. Lightly summarize every major section.
-4. Preserve exact figure/table/equation identifiers and important numbers.
-5. Separate author claims from interpretation.
-6. Keep Discord output short and link to the page.
+1. 논문 전체를 추출합니다.
+2. 섹션 순서를 보존합니다.
+3. 모든 주요 섹션을 가볍게 요약/해설합니다.
+4. 그림/표/수식 번호와 중요한 숫자를 정확히 보존합니다.
+5. 저자 주장과 해석을 분리합니다.
+6. 디스코드 출력은 짧게 유지하고 페이지 링크를 공유합니다.
