@@ -1,0 +1,26 @@
+---
+interface MathNote {
+  id: string;
+  formula: string;
+  explanation: string[];
+}
+
+interface Props {
+  notes?: MathNote[];
+}
+
+const { notes = [] }: Props = Astro.props;
+---
+{notes.length > 0 && (
+  <div class="inline-math-notes">
+    {notes.map((item) => (
+      <article class="math-card compact">
+        <h3>{item.id}</h3>
+        <div class="math-display" set:html={item.formula}></div>
+        <div class="math-legend">
+          {item.explanation.map((text) => <div>{text}</div>)}
+        </div>
+      </article>
+    ))}
+  </div>
+)}

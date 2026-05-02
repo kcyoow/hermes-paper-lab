@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SourceFigureSet from '../../../components/SourceFigureSet.astro';
+import MathNoteSet from '../../../components/MathNoteSet.astro';
 const base = import.meta.env.BASE_URL;
 const metrics = [
   ['합성 컴퓨터', '1,000', '예비 실험에서 생성한 사용자별 합성 컴퓨터 수'],
@@ -122,6 +124,12 @@ const mathNotes = [
     explanation: ['표 1의 시뮬레이션 전후 평균 파일 수 차이입니다. 한 달 업무 시뮬레이션 후 합성 컴퓨터 하나당 평균 85.8개 파일이 늘어납니다.', '평균 디렉터리 깊이는 거의 유지되므로, 논문은 이를 기존 폴더 구조 안에서 산출물이 확장된다는 증거로 해석합니다.']
   }
 ];
+type SourceFigure = (typeof sourceFigures)[number];
+type MathNote = (typeof mathNotes)[number];
+const figureMap = Object.fromEntries(sourceFigures.map((figure) => [figure.id, figure])) as Record<string, SourceFigure>;
+const mathMap = Object.fromEntries(mathNotes.map((item) => [item.id, item])) as Record<string, MathNote>;
+const pickFigures = (...ids: string[]): SourceFigure[] => ids.map((id) => figureMap[id]).filter((figure): figure is SourceFigure => Boolean(figure));
+const pickMath = (...ids: string[]): MathNote[] => ids.map((id) => mathMap[id]).filter((item): item is MathNote => Boolean(item));
 ---
 <BaseLayout title="장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터 — Hermes Paper Lab" description="arXiv:2604.28181v1 논문 전체 흐름 한국어 해설.">
   <main class="site-shell paper-layout">
@@ -220,6 +228,7 @@ const mathNotes = [
         <p>
           논문의 기여는 여기서 정리됩니다. 페르소나 풀에서 출발해 LLM으로 사용자별 컴퓨터를 만들고, 각 컴퓨터 위에서 약 한 달 분량의 업무 시뮬레이션을 실행합니다. 그 결과 작업 궤적에는 검색, 계획, 수정, 협업, 실패 회복 같은 과정 신호와 최종 산출물 품질이라는 결과 신호가 동시에 남습니다.
         </p>
+        <SourceFigureSet figures={pickFigures('원문 그림 1')} />
         <p class="source">출처: 1장, 그림 1.</p>
       </section>
 
@@ -228,6 +237,7 @@ const mathNotes = [
         <p>
           2장은 합성 컴퓨터를 어떻게 만드는지 설명합니다. 전체 흐름은 페르소나 → 상세 사용자 프로필 → 파일시스템 계획 → 산출물 생성입니다. 원문 그림 2는 이 과정을 한 장으로 보여줍니다.
         </p>
+        <SourceFigureSet figures={pickFigures('원문 그림 2')} />
         <h3>2.1 페르소나 기반 사용자 프로필</h3>
         <p>
           시작점은 페르소나입니다. 하지만 페르소나만으로는 어떤 파일이 컴퓨터에 있어야 하는지 결정할 수 없으므로, 저자들은 페르소나를 상세 사용자 프로필로 확장합니다. 이 프로필에는 정체성, 직업, 조직, 경력 단계, 책임 범위, 최근 업무 이력, 현재 프로젝트, 협업자, 자주 만드는 업무 산출물이 들어갑니다.
@@ -250,6 +260,7 @@ const mathNotes = [
           <strong>주의할 점</strong>
           <p>원문 각주는 현재 파이프라인이 계획 단계에서 공개 파일의 실제 다운로드 가능 여부를 미리 검증하지 않고, 나중에 실패하면 합성 생성으로 대체한다고 밝힙니다. 즉 합성 컴퓨터의 “현실감”은 강하지만, 산출물 출처와 사실 근거는 파이프라인 품질에 따라 흔들릴 수 있습니다.</p>
         </div>
+        <SourceFigureSet figures={pickFigures('원문 그림 3')} />
         <p class="source">출처: 2장, 그림 2, 그림 3.</p>
       </section>
 
@@ -291,6 +302,7 @@ const mathNotes = [
         <p>
           그림 5와 표 2는 산출물이 빈 자리표시자가 아니라 생산성 산출물 중심임을 보여줍니다. DOCX, XLSX, PDF, PPTX가 전체 파일의 67.8%를 차지하고, DOCX만으로도 34.8%입니다. PPTX와 PDF의 파일 크기도 상당해 내용이 채워진 산출물임을 뒷받침합니다.
         </p>
+        <SourceFigureSet figures={pickFigures('원문 그림 4', '원문 그림 5')} />
         <table class="metric-table">
           <thead><tr><th>항목</th><th>보고된 값</th><th>해석</th></tr></thead>
           <tbody>
@@ -299,6 +311,7 @@ const mathNotes = [
             <tr><td>협업</td><td>협업자 5.5명; 소통 31회 평균</td><td>협업/피드백이 작업 궤적에 포함됨</td></tr>
           </tbody>
         </table>
+        <MathNoteSet notes={pickMath('계산식 1 — 평균 전체 턴 수', '계산식 5 — 파일 수 증가')} />
         <h3>4.2.1 최종 산출물 평가</h3>
         <p>
           최종 산출물은 컴퓨터와 생산성 목표마다 생성한 채점 기준으로 평가합니다. 한 실행의 채점 기준이 너무 좁아지는 것을 막기 위해 같은 시뮬레이션 설정을 5회 실행하고, 각 실행에서 초안 채점 기준을 만든 뒤 최종 채점 기준으로 병합합니다. 평가자는 Claude Code SDK 에이전트 + Claude Opus 4.6이며, 산출물을 직접 읽고 필요하면 스크린샷으로 시각 품질까지 확인합니다.
@@ -306,6 +319,7 @@ const mathNotes = [
         <p>
           100개 합성 컴퓨터에 적용한 결과, 대부분의 점수는 60–80% 구간에 분포합니다. 저자들은 작업 에이전트가 많은 산출물을 완성할 수 있지만 아직 개선 여지가 크다고 해석합니다.
         </p>
+        <SourceFigureSet figures={pickFigures('원문 그림 6a', '원문 그림 6b')} />
         <h3>4.2.2 전체 작업 궤적 분석</h3>
         <p>
           이 논문의 핵심은 최종 파일만 보지 않는다는 점입니다. 작업 궤적 수준 분석은 에이전트가 어떻게 계획하고, 파일시스템을 탐색하고, 기존 산출물을 사용하고, 협업자와 조율하고, 중간 파일을 수정했는지를 봅니다. 최종 산출물만 보면 그럴듯하지만 근거화가 약했거나 협업자 피드백을 놓쳤거나 불필요한 재작업이 많았던 경우를 잡아내기 위해서입니다.
@@ -317,6 +331,8 @@ const mathNotes = [
         <p>
           결과는 표 4에 정리됩니다. 기준선 평균 점수는 61.6%, 스킬 제공 조건은 68.6%로 +7.0%p 개선됩니다. 100개 검증용 컴퓨터 중 83개에서 스킬 제공 에이전트가 기준선보다 좋았습니다. 그림 7은 학습용 컴퓨터 수가 10, 100, 500, 900으로 커질수록 스킬 승률이 64%, 75%, 83%로 증가한다는 규모 확장 추세를 보여줍니다.
         </p>
+        <MathNoteSet notes={pickMath('계산식 3 — 학습/검증 분할', '계산식 2 — 동일 영역 스킬 개선폭')} />
+        <SourceFigureSet figures={pickFigures('원문 그림 7')} />
         <h3>4.4 외부 영역 평가</h3>
         <p>
           저자들은 GDPVal 220개 작업으로 외부 영역 전이도 평가합니다. 표 5는 두 설정의 차이를 보여줍니다. 이 논문 설정은 평균 13.8개 참고 파일과 112개 컴퓨터 파일, 4.09개 산출물, 2,272턴, 8.59시간을 사용합니다. GDPVal은 평균 1.18개 참고 파일, 0개 컴퓨터 파일, 1.63개 산출물, 31턴, 17분입니다.
@@ -324,6 +340,8 @@ const mathNotes = [
         <p>
           그림 8에서 Sonnet 설정은 스킬 제공 에이전트가 105개 작업에서 이기고 67개 작업에서 졌으며, sign test 기준 p=0.002(단측), p=0.005(양측)로 유의하다고 보고됩니다. 같은 스킬은 Haiku와 Opus에도 긍정적인 모델 간 전이를 보이지만 개선폭은 더 약합니다.
         </p>
+        <SourceFigureSet figures={pickFigures('원문 그림 8')} />
+        <MathNoteSet notes={pickMath('계산식 4 — GDPVal sign test 해석')} />
         <p class="source">출처: 4장, 그림 4–8, 표 1–5.</p>
       </section>
 
@@ -333,6 +351,7 @@ const mathNotes = [
         <p>
           논의의 중심 주장은 합성 컴퓨터가 비공개 사용자 데이터 없이 현실적인 장기 시뮬레이션을 대량 실행할 수 있게 하고, 그 작업 궤적에서 과정/결과 신호를 얻어 에이전트를 자기개선할 수 있다는 것입니다. 그림 9는 시뮬레이션 → 회고 신호 → 스킬 → 개선된 행동 → 가능한 모델 가중치 업데이트로 이어지는 루프를 보여줍니다.
         </p>
+        <SourceFigureSet figures={pickFigures('원문 그림 9')} />
         <p>
           저자들은 스킬 기반 개선을 중간 단계로 봅니다. 스킬은 빠르게 반복 개선할 수 있고, 검토 가능하며, 추출된 경험이 실제로 에이전트 행동을 개선하는지 검증하기 좋습니다. 다만 스킬 묶음이 계속 커지면 외부 지시문으로 들고 다니기 어려우므로, 궁극적으로는 이런 신호를 모델 업데이트에 반영하는 방향을 제안합니다.
         </p>
@@ -386,9 +405,9 @@ const mathNotes = [
       </section>
 
       <section class="paper-section" id="source-figures">
-        <h2>원문 그림 따로 보기</h2>
+        <h2>원문 그림 전체 모아보기</h2>
         <p>
-          아래 이미지는 논문 원문 그림를 번호별로 분리해 넣은 것입니다. 위의 imggen high 인포그래픽은 이해를 돕기 위한 재구성 그림이고, 이 섹션은 원문 그림의 정확한 근거를 확인하는 용도입니다.
+          본문 중간에도 맥락에 맞는 원문 그림을 배치했습니다. 아래 이미지는 논문 원문 그림을 번호별로 다시 모아 보는 섹션입니다. 위의 imggen high 인포그래픽은 이해를 돕기 위한 재구성 그림이고, 이 섹션은 원문 그림의 정확한 근거를 한 번에 확인하는 용도입니다.
         </p>
         <div class="source-figure-grid">
           {sourceFigures.map((figure) => (
@@ -406,9 +425,9 @@ const mathNotes = [
       </section>
 
       <section class="paper-section" id="equations">
-        <h2>수식·계산식 따로 풀어보기</h2>
+        <h2>수식·계산식 전체 모아보기</h2>
         <p>
-          이 논문은 새로운 모델 수식보다는 시뮬레이션 통계와 평가 계산이 중심입니다. 그래서 핵심 수치가 어떻게 읽히는지 LaTeX 형태로 따로 정리했습니다.
+          이 논문은 새로운 모델 수식보다는 시뮬레이션 통계와 평가 계산이 중심입니다. 본문 중간에도 관련 계산식을 배치했고, 아래에는 핵심 수치가 어떻게 읽히는지 LaTeX 형태로 다시 모았습니다.
         </p>
         <div class="math-list">
           {mathNotes.map((item) => (
