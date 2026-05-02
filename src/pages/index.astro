@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+const firstPaperHref = `${base}papers/synthetic-computers-at-scale/`;
+---
+<BaseLayout title="Hermes Paper Lab — 논문 지식베이스" description="논문 전체 흐름을 따라 읽는 full-paper walkthrough archive.">
+  <main>
+    <section class="hero site-shell">
+      <span class="kicker">Full-paper walkthrough archive</span>
+      <h1>논문을 요약하지 말고, 논문 전체를 따라 읽는 지식베이스.</h1>
+      <p>
+        Discord에는 짧은 링크만 남기고, 실제 분석은 웹 페이지에서 봅니다. 각 논문은 Abstract부터 Conclusion/Appendix까지 섹션 순서를 유지하며, 핵심 주장·표·그림·한계·구현 아이디어를 가볍게 정리합니다.
+      </p>
+      <div class="hero-actions">
+        <a class="pill dark" href={firstPaperHref}>첫 논문 보기</a>
+        <a class="pill" href="#rules">작성 규칙 보기</a>
+      </div>
+    </section>
+
+    <section class="section site-shell" id="papers">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Papers</h2>
+          <p class="section-desc">현재는 첫 번째 seed paper만 올라가 있습니다. 이후 “이 논문 분석해서 사이트에 올려줘”라고 하면 이 목록에 계속 누적하는 구조입니다.</p>
+        </div>
+      </div>
+
+      <article class="card paper-card">
+        <div class="paper-card-body">
+          <span class="kicker">Full walkthrough · arXiv:2604.28181v1</span>
+          <h3>Synthetic Computers at Scale for Long-Horizon Productivity Simulation</h3>
+          <p>
+            사용자별 파일시스템과 문서/스프레드시트/발표자료가 들어 있는 “synthetic computer”를 만들고, 그 위에서 한 달 분량의 장기 생산성 업무를 시뮬레이션해 에이전트 개선 신호를 얻는 논문입니다.
+          </p>
+          <div class="tags">
+            <span class="tag">agents</span>
+            <span class="tag">simulation</span>
+            <span class="tag">long-horizon</span>
+            <span class="tag">productivity</span>
+            <span class="tag">skills</span>
+          </div>
+          <div class="meta-line">
+            <span>Authors: Tao Ge, Baolin Peng, Hao Cheng, Jianfeng Gao</span>
+            <span>Status: full walkthrough</span>
+          </div>
+          <div class="hero-actions" style="justify-content:flex-start">
+            <a class="pill dark" href={firstPaperHref}>Walkthrough 열기</a>
+            <a class="pill" href="https://arxiv.org/abs/2604.28181v1">arXiv</a>
+          </div>
+        </div>
+        <a class="paper-thumb" href={firstPaperHref} aria-label="Open first paper">
+          <img src={`${base}images/papers/synthetic-computers/method-overview.svg`} alt="Synthetic Computers method overview" />
+        </a>
+      </article>
+    </section>
+
+    <section class="section site-shell" id="rules">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Content rule</h2>
+          <p class="section-desc">이 사이트의 핵심 규칙은 “짧은 요약”이 아니라 “논문 전체를 따라 읽는 가이드”입니다.</p>
+        </div>
+      </div>
+      <div class="grid three">
+        <div class="card">
+          <h3>1. Full structure</h3>
+          <p>Abstract, Introduction, Method, Experiments, Discussion, Conclusion, Appendix 순서를 유지합니다.</p>
+        </div>
+        <div class="card">
+          <h3>2. Source-grounded</h3>
+          <p>중요 숫자, Figure/Table ID, 실험 조건은 원문 기준으로 보존하고, 저자 주장과 해석을 분리합니다.</p>
+        </div>
+        <div class="card">
+          <h3>3. Artifact-first</h3>
+          <p>Discord에는 긴 분석을 보내지 않고, HTML/GitHub Pages/이미지/PDF 같은 외부 artifact 링크를 공유합니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

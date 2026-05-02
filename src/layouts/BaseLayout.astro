@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+const {
+  title = 'Hermes Paper Lab',
+  description = 'Full-paper walkthrough archive for AI and productivity research.'
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://kcyoow.github.io');
+const base = import.meta.env.BASE_URL;
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-shell nav">
+        <a class="brand" href={base} aria-label="Hermes Paper Lab home">
+          <span class="brand-mark">HL</span>
+          <span>Hermes Paper Lab</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href={`${base}#papers`}>Papers</a>
+          <a href={`${base}#rules`}>Content rule</a>
+          <a class="pill dark" href="https://github.com/kcyoow/hermes-paper-lab">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <slot />
+    <footer class="footer">
+      <div class="site-shell">
+        Hermes Paper Lab · full-paper walkthroughs, source-grounded notes, and visual maps. Built with Astro and GitHub Pages.
+      </div>
+    </footer>
+  </body>
+</html>
