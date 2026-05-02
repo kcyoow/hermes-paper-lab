@@ -124,6 +124,9 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.06
 .math-card h3 { margin-top: 0; }
 .math-card.compact h3 { font-size: 18px; }
 .math-display { overflow-x: auto; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: #111; font-size: 17px; }
+.math-visual { margin: 14px 0 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: #fff; }
+.math-visual img { display: block; width: 100%; background: #fff; }
+.math-visual figcaption { padding: 11px 14px; color: var(--muted); font-size: 13px; line-height: 1.6; border-top: 1px solid var(--line); }
 .math-legend { display: grid; gap: 8px; margin: 12px 0 0; color: #333; }
 .math-legend div { border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.65; }
 .paper-rule-list { display: grid; gap: 12px; }

@@ -101,26 +101,51 @@ const mathNotes = [
   {
     id: '계산식 1 — 평균 전체 턴 수',
     formula: String.raw`\[\text{전체 턴 평균} = \text{주간 계획 턴} + \text{일일 실행 턴} = 63 + 2{,}209 = 2{,}272\]`,
+    visual: {
+      src: 'images/papers/synthetic-computers/equations/calculation-1-total-turns.png',
+      alt: '주간 계획 63턴과 일일 실행 2209턴이 합쳐져 평균 전체 2272턴이 되는 과정을 보여주는 imggen 해설 그림',
+      caption: '짧은 질의응답이 아니라 주간 계획과 일일 실행이 누적되는 장기 에이전트 궤적이라는 점을 보여줍니다.'
+    },
     explanation: ['표 3의 평균값을 읽는 가장 단순한 방식입니다. 한 실행이 짧은 QA가 아니라 주간 계획과 일일 실행으로 나뉜 장기 에이전트 궤적이라는 뜻입니다.', '여기서 “턴”은 사용자와 모델이 한 번 묻고 답한 단순 채팅 수가 아니라 Claude Code SDK 기반 작업 에이전트가 파일 탐색·수정·협업 메시지 등을 수행하며 남긴 상호작용 단위로 이해해야 합니다.']
   },
   {
     id: '계산식 2 — 동일 영역 스킬 개선폭',
     formula: String.raw`\[\Delta_{\text{skill}} = 68.6\% - 61.6\% = 7.0\text{ percentage points}\]`,
+    visual: {
+      src: 'images/papers/synthetic-computers/equations/calculation-2-skill-improvement.png',
+      alt: '기준선 61.6퍼센트와 스킬 제공 조건 68.6퍼센트의 차이 7.0 percentage points를 막대로 비교한 imggen 해설 그림',
+      caption: '61.6%에서 68.6%로 오른 차이가 상대 증가율이 아니라 +7.0 percentage points라는 점을 강조합니다.'
+    },
     explanation: ['표 4의 핵심 수치입니다. 기준선 평균 점수 61.6%와 스킬 제공 조건 68.6%의 차이는 7.0%p입니다.', '주의할 점은 7.0% “상대 증가율”이 아니라 percentage point 차이라는 것입니다. 상대 증가율로 바꾸면 \((68.6-61.6)/61.6\)처럼 다른 값이 됩니다.']
   },
   {
     id: '계산식 3 — 학습/검증 분할',
     formula: String.raw`\[1{,}000\;\text{synthetic computers} = 900_{\text{스킬 추출용}} + 100_{\text{검증용}}\]`,
+    visual: {
+      src: 'images/papers/synthetic-computers/equations/calculation-3-train-validation-split.png',
+      alt: '1000개 합성 컴퓨터가 900개 스킬 추출용과 100개 검증용으로 나뉘는 구조를 보여주는 imggen 해설 그림',
+      caption: '1,000개 합성 컴퓨터 전체를 섞어 쓰지 않고, 900개에서 스킬을 만들고 100개에서 검증하는 분할 구조입니다.'
+    },
     explanation: ['논문은 1,000개 합성 컴퓨터 전체를 한꺼번에 평가하지 않고, 900개에서 회고 신호와 직업별 스킬을 만들고 100개에서 검증합니다.', '따라서 “학습”은 모델 가중치 업데이트가 아니라 경험 보고서에서 스킬을 뽑는 절차입니다. 이 구분이 중요합니다.']
   },
   {
     id: '계산식 4 — GDPVal sign test 해석',
     formula: String.raw`\[P\left(X \ge 105;\; X \sim \mathrm{Binomial}(172, 0.5)\right) \approx 0.002\]`,
+    visual: {
+      src: 'images/papers/synthetic-computers/equations/calculation-4-sign-test.png',
+      alt: '105승 67패의 172개 승패 판정을 이항분포 sign test의 오른쪽 꼬리 확률로 보는 imggen 해설 그림',
+      caption: '단측 sign test 기준으로 50대50 승률 가정에서 105승 이상이 얼마나 드문지를 보는 계산 직관입니다.'
+    },
     explanation: ['그림 8에서 Sonnet 설정은 스킬 제공 에이전트가 105승, 67패를 기록했다고 보고합니다. 동률/비교 제외를 빼면 172개의 승패 판정으로 볼 수 있습니다.', '논문은 단측 p=0.002, 양측 p=0.005를 보고합니다. 이 수식은 “동전 던지기처럼 승률이 50%라면 105승 이상이 얼마나 드문가”를 보는 sign test 직관입니다.']
   },
   {
     id: '계산식 5 — 파일 수 증가',
     formula: String.raw`\[\Delta_{\text{files}} = 197.4 - 111.6 = 85.8\;\text{files per computer}\]`,
+    visual: {
+      src: 'images/papers/synthetic-computers/equations/calculation-5-file-increase.png',
+      alt: '평균 파일 수가 111.6개에서 197.4개로 늘어 85.8개 증가하는 과정을 전후 파일 더미로 보여주는 imggen 해설 그림',
+      caption: '시뮬레이션 전후 평균 파일 수 차이 85.8개를 before/after 파일 더미로 직관화했습니다.'
+    },
     explanation: ['표 1의 시뮬레이션 전후 평균 파일 수 차이입니다. 한 달 업무 시뮬레이션 후 합성 컴퓨터 하나당 평균 85.8개 파일이 늘어납니다.', '평균 디렉터리 깊이는 거의 유지되므로, 논문은 이를 기존 폴더 구조 안에서 산출물이 확장된다는 증거로 해석합니다.']
   }
 ];
@@ -429,17 +454,7 @@ const pickMath = (...ids: string[]): MathNote[] => ids.map((id) => mathMap[id]).
         <p>
           이 논문은 새로운 모델 수식보다는 시뮬레이션 통계와 평가 계산이 중심입니다. 본문 중간에도 관련 계산식을 배치했고, 아래에는 핵심 수치가 어떻게 읽히는지 LaTeX 형태로 다시 모았습니다.
         </p>
-        <div class="math-list">
-          {mathNotes.map((item) => (
-            <article class="math-card">
-              <h3>{item.id}</h3>
-              <div class="math-display" set:html={item.formula}></div>
-              <div class="math-legend">
-                {item.explanation.map((text) => <div>{text}</div>)}
-              </div>
-            </article>
-          ))}
-        </div>
+        <MathNoteSet notes={mathNotes} variant="full" />
       </section>
 
       <section class="paper-section" id="index">

@@ -1,22 +1,39 @@
 ---
+interface MathVisual {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
 interface MathNote {
   id: string;
   formula: string;
   explanation: string[];
+  visual?: MathVisual;
 }
 
 interface Props {
   notes?: MathNote[];
+  variant?: 'compact' | 'full';
 }
 
-const { notes = [] }: Props = Astro.props;
+const { notes = [], variant = 'compact' }: Props = Astro.props;
+const base = import.meta.env.BASE_URL;
+const wrapperClass = variant === 'full' ? 'math-list' : 'inline-math-notes';
+const cardClass = variant === 'full' ? 'math-card' : 'math-card compact';
 ---
 {notes.length > 0 && (
-  <div class="inline-math-notes">
+  <div class={wrapperClass}>
     {notes.map((item) => (
-      <article class="math-card compact">
+      <article class={cardClass}>
         <h3>{item.id}</h3>
         <div class="math-display" set:html={item.formula}></div>
+        {item.visual && (
+          <figure class="math-visual">
+            <img src={`${base}${item.visual.src}`} alt={item.visual.alt} loading="lazy" />
+            {item.visual.caption && <figcaption>{item.visual.caption}</figcaption>}
+          </figure>
+        )}
         <div class="math-legend">
           {item.explanation.map((text) => <div>{text}</div>)}
         </div>
