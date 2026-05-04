@@ -32,10 +32,13 @@ body {
     linear-gradient(180deg, #fff 0%, #fff 44%, #fbfbfb 100%);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--accent-deep); }
+img, svg, video { max-width: 100%; height: auto; }
+code, pre, .source, .original-title, .meta-line { overflow-wrap: anywhere; }
 
 .site-shell { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
 .site-header {
@@ -46,8 +49,8 @@ a:hover { color: var(--accent-deep); }
   background: rgba(255,255,255,0.78);
   border-bottom: 1px solid var(--line);
 }
-.nav { height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -0.03em; }
+.nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -0.03em; white-space: nowrap; }
 .brand-mark { width: 30px; height: 30px; border-radius: 10px; background: var(--ink); display: grid; place-items: center; color: var(--accent); font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; }
 .nav-links { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 14px; font-weight: 500; }
 .pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); padding: 8px 14px; border-radius: 999px; background: #fff; }
@@ -55,9 +58,9 @@ a:hover { color: var(--accent-deep); }
 .pill.green { background: var(--accent-soft); color: var(--accent-deep); border-color: rgba(24,226,153,0.25); }
 
 .hero { padding: 88px 0 56px; text-align: center; }
-.kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(24,226,153,0.25); padding: 6px 12px; border-radius: 999px; font: 600 12px/1 'Geist Mono', ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; }
-h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.065em; margin: 24px auto 20px; max-width: 980px; }
-.hero p { color: var(--muted); font-size: clamp(17px, 2vw, 20px); line-height: 1.7; max-width: 760px; margin: 0 auto; }
+.kicker { display: inline-flex; align-items: center; flex-wrap: wrap; max-width: 100%; gap: 8px; color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(24,226,153,0.25); padding: 6px 12px; border-radius: 999px; font: 600 12px/1.35 'Geist Mono', ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; }
+h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.065em; margin: 24px auto 20px; max-width: 980px; word-break: keep-all; overflow-wrap: break-word; }
+.hero p { color: var(--muted); font-size: clamp(17px, 2vw, 20px); line-height: 1.7; max-width: 760px; margin: 0 auto; word-break: keep-all; overflow-wrap: break-word; }
 .hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 
 .section { padding: 56px 0; }
@@ -89,13 +92,13 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.06
 .paper-article { min-width: 0; }
 .paper-hero { border: 1px solid var(--line); border-radius: 28px; padding: 34px; background: rgba(255,255,255,.9); box-shadow: var(--shadow); }
 .paper-hero h1 { text-align: left; margin: 18px 0 18px; font-size: clamp(38px, 5.5vw, 68px); max-width: 100%; }
-.paper-hero .subtitle { color: var(--muted); font-size: 18px; line-height: 1.7; }
+.paper-hero .subtitle { color: var(--muted); font-size: 18px; line-height: 1.7; word-break: keep-all; overflow-wrap: break-word; }
 .original-title { color: var(--muted-2); font-size: 14px; line-height: 1.6; margin: -8px 0 18px; }
 .paper-section { margin-top: 28px; border: 1px solid var(--line); border-radius: 24px; background: #fff; padding: 30px; box-shadow: 0 4px 18px rgba(0,0,0,0.025); }
 .paper-section h2 { margin: 0 0 16px; font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.04em; }
 .paper-section h3 { margin: 26px 0 10px; font-size: 22px; letter-spacing: -0.025em; }
 .paper-section h4 { margin: 22px 0 8px; font-size: 17px; }
-.paper-section p, .paper-section li { line-height: 1.78; color: #2f2f2f; }
+.paper-section p, .paper-section li { line-height: 1.78; color: #2f2f2f; word-break: keep-all; overflow-wrap: break-word; }
 .paper-section p { margin: 0 0 14px; }
 .paper-section ul, .paper-section ol { padding-left: 22px; }
 .callout { border: 1px solid rgba(24,226,153,.26); background: linear-gradient(180deg, #f4fff9, #fff); border-radius: 18px; padding: 18px; margin: 18px 0; }
@@ -123,7 +126,8 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.06
 .math-card.compact { border-color: rgba(55,114,207,.18); background: linear-gradient(180deg, #f6f9ff, #fff); }
 .math-card h3 { margin-top: 0; }
 .math-card.compact h3 { font-size: 18px; }
-.math-display { overflow-x: auto; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: #111; font-size: 17px; }
+.math-display { overflow-x: auto; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: #111; font-size: 17px; -webkit-overflow-scrolling: touch; }
+.math-display mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
 .math-visual { margin: 14px 0 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: #fff; }
 .math-visual img { display: block; width: 100%; background: #fff; }
 .math-visual figcaption { padding: 11px 14px; color: var(--muted); font-size: 13px; line-height: 1.6; border-top: 1px solid var(--line); }
@@ -138,10 +142,98 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.06
 .footer { border-top: 1px solid var(--line); padding: 34px 0; color: var(--muted); font-size: 14px; }
 
 @media (max-width: 900px) {
-  .grid.two, .grid.three, .stat-grid, .paper-card, .paper-layout, .source-figure-grid, .inline-source-figures { grid-template-columns: 1fr; }
+  .site-shell { padding-inline: 20px; }
+  .nav { min-height: 0; padding: 12px 0; flex-wrap: wrap; gap: 10px 14px; align-items: flex-start; }
+  .nav-links {
+    order: 3;
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 0 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.88); }
+  .nav-links .pill { padding: 8px 12px; }
+  .hero { padding: 62px 0 38px; }
+  h1 { font-size: clamp(36px, 10vw, 56px); letter-spacing: -0.055em; }
+  .section { padding: 42px 0; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .grid.two, .grid.three, .paper-card, .paper-layout, .source-figure-grid, .inline-source-figures { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .source-figure-card.wide { grid-column: auto; }
-  .toc { position: static; }
-  .nav-links { display: none; }
-  .paper-section, .paper-hero { padding: 22px; }
+  .paper-card-body { padding: 24px; }
+  .paper-thumb { min-height: 210px; padding: 18px; }
+  .paper-layout { gap: 22px; padding: 26px 0 58px; }
+  .toc {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 12px;
+    margin-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc-title { flex: 0 0 auto; margin: 0 4px 0 0; }
+  .toc a { flex: 0 0 auto; padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: #fff; white-space: nowrap; }
+  .paper-hero h1 { font-size: clamp(34px, 9vw, 52px); }
+  .paper-section, .paper-hero { padding: 22px; border-radius: 22px; }
+  .metric-table {
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    -webkit-overflow-scrolling: touch;
+  }
+  .metric-table th, .metric-table td { min-width: 150px; }
   .claim-row { grid-template-columns: 1fr; }
+  .claim-head { display: none; }
+  .claim-row > div::before { display: block; margin-bottom: 6px; color: var(--muted); font: 600 11px/1.2 'Geist Mono', ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; }
+  .claim-row > div:nth-child(1)::before { content: '저자 주장'; }
+  .claim-row > div:nth-child(2)::before { content: '내 해석'; }
+  .claim-row > div:nth-child(3)::before { content: '신뢰도'; }
+}
+
+@media (max-width: 560px) {
+  .site-shell { padding-inline: 16px; }
+  .brand { font-size: 15px; }
+  .brand-mark { width: 28px; height: 28px; border-radius: 9px; font-size: 12px; }
+  .nav-links a { font-size: 13px; padding: 7px 10px; }
+  .hero { padding: 44px 0 30px; }
+  h1 { font-size: clamp(30px, 10vw, 38px); line-height: 1.1; letter-spacing: -0.04em; }
+  .hero p { font-size: 16px; line-height: 1.65; }
+  .hero-actions { justify-content: stretch; gap: 9px; margin-top: 22px; }
+  .hero-actions .pill { flex: 1 1 150px; justify-content: center; text-align: center; }
+  .kicker { font-size: 11px; letter-spacing: .035em; }
+  .section { padding: 34px 0; }
+  .section-title { font-size: clamp(25px, 9vw, 34px); }
+  .card { padding: 20px; border-radius: 18px; }
+  .card h3 { font-size: 19px; }
+  .paper-card-body { padding: 20px; }
+  .paper-thumb { min-height: 170px; padding: 14px; }
+  .meta-line { display: grid; gap: 6px; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .paper-layout { padding-bottom: 44px; }
+  .toc { margin-inline: -4px; border-radius: 16px; }
+  .toc-title { display: none; }
+  .paper-hero h1 { font-size: clamp(28px, 9vw, 36px); line-height: 1.16; letter-spacing: -0.04em; }
+  .paper-hero .subtitle { font-size: 16px; line-height: 1.65; }
+  .paper-section, .paper-hero { padding: 18px; border-radius: 20px; }
+  .paper-section h2 { font-size: clamp(24px, 8vw, 30px); }
+  .paper-section h3 { font-size: 20px; }
+  .source-figure-grid, .inline-source-figures { gap: 14px; padding: 10px; border-radius: 18px; }
+  .source-figure-body { padding: 14px; }
+  .figure-card { margin: 18px 0; padding: 12px; border-radius: 18px; }
+  .math-card { padding: 15px; border-radius: 18px; }
+  .math-display { margin-inline: -3px; padding: 12px; font-size: 15px; }
+  .math-legend div { line-height: 1.6; }
+  .footer { padding: 28px 0; }
+}
+
+@media (max-width: 420px) {
+  .hero-actions .pill { flex-basis: 100%; }
 }
