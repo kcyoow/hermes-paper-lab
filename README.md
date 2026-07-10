@@ -9,7 +9,8 @@
 
 ## 현재 구성
 
-- 전체 흐름 해설 2편
+- 전체 흐름 해설 3편
+  - WeDLM: Reconciling Diffusion Language Models with Standard Causal Attention for Fast Inference
   - Synthetic Computers at Scale for Long-Horizon Productivity Simulation
   - VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks
 - ICML 2026 현장 메모 22개 복원 컬렉션
@@ -40,4 +41,4 @@ npm run build
 npm run preview
 ```
 
-`main` 브랜치에 push하면 GitHub Actions가 Astro 정적 사이트를 빌드하고 GitHub Pages에 배포합니다.
+`npm run dev`와 `npm run build` 전에 장문 논문 페이지를 자동으로 materialize합니다. `main` 브랜치에 push하면 GitHub Actions가 Astro 정적 사이트를 빌드하고 GitHub Pages에 배포합니다.
