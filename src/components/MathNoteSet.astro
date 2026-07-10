@@ -46,7 +46,7 @@ p_{\mathrm{cache}}\triangleq
 \tilde{\mathbf{x}}
 &=\left[
 \underbrace{x_{o_1},\ldots,x_{o_{N_o}}}_{\text{observed tokens}},\;
-\underbrace{\texttt{[M]},\ldots,\texttt{[M]}}_{N_m\text{ mask tokens}}
+\underbrace{\mathtt{[M]},\ldots,\mathtt{[M]}}_{N_m\text{ mask tokens}}
 \right],\\[4pt]
 \tilde{\mathbf{p}}
 &=\left[
@@ -83,7 +83,7 @@ const displayedFormula = (item: MathNote) => formulaCorrections[item.id] ?? item
     {notes.map((item) => (
       <article class={cardClass}>
         <h3>{item.id}</h3>
-        <div class="math-display" set:html={displayedFormula(item)}></div>
+        <div class="math-display">{displayedFormula(item)}</div>
         {item.visual && (
           <figure class="math-visual">
             <img src={`${base}${item.visual.src}`} alt={item.visual.alt} loading="lazy" />
