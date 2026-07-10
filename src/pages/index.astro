@@ -5,14 +5,14 @@ import { icml2026Papers } from '../data/icml2026';
 const base = import.meta.env.BASE_URL;
 const completedPapers = [
   {
-    id: 'FULL · 001',
-    title: '장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터',
-    original: 'Synthetic Computers at Scale for Long-Horizon Productivity Simulation',
-    description: '사용자별 파일시스템과 실제 업무 산출물을 가진 합성 컴퓨터에서 한 달 분량의 장기 에이전트 작업을 시뮬레이션합니다.',
-    category: 'Agents',
-    meta: 'Agents · Simulation',
-    source: 'arXiv:2604.28181',
-    href: `${base}papers/synthetic-computers-at-scale/`,
+    id: 'FULL · 003',
+    title: 'WeDLM: 인과적 어텐션으로 Diffusion LM을 실제로 빠르게 만들기',
+    original: 'WeDLM: Reconciling Diffusion Language Models with Standard Causal Attention for Fast Inference',
+    description: 'Diffusion식 병렬 복원은 유지하면서 표준 causal attention과 KV cache를 결합해 실제 wall-clock 추론 속도를 높이는 방법을 읽습니다.',
+    category: 'LLM',
+    meta: 'Diffusion LM · Inference',
+    source: 'arXiv:2512.22737',
+    href: `${base}papers/wedlm/`,
     status: '해설 완료',
     confidenceClass: ''
   },
@@ -25,6 +25,18 @@ const completedPapers = [
     meta: 'PEFT · LoRA',
     source: 'arXiv:2405.15179',
     href: `${base}papers/vb-lora/`,
+    status: '해설 완료',
+    confidenceClass: ''
+  },
+  {
+    id: 'FULL · 001',
+    title: '장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터',
+    original: 'Synthetic Computers at Scale for Long-Horizon Productivity Simulation',
+    description: '사용자별 파일시스템과 실제 업무 산출물을 가진 합성 컴퓨터에서 한 달 분량의 장기 에이전트 작업을 시뮬레이션합니다.',
+    category: 'Agents',
+    meta: 'Agents · Simulation',
+    source: 'arXiv:2604.28181',
+    href: `${base}papers/synthetic-computers-at-scale/`,
     status: '해설 완료',
     confidenceClass: ''
   }
@@ -71,7 +83,7 @@ const libraryItems = [...completedPapers, ...icmlPreview];
     <div class="issue-strip">
       <div class="site-shell issue-grid">
         <div class="issue-cell">Paperroom — 깊이 읽는 개인 논문 서재</div>
-        <div class="issue-cell">02 Full readings</div>
+        <div class="issue-cell">03 Full readings</div>
         <div class="issue-cell">22 ICML notes</div>
         <div class="issue-cell">Mobile first</div>
       </div>
@@ -89,21 +101,21 @@ const libraryItems = [...completedPapers, ...icmlPreview];
 
         <article class="featured-reading">
           <div class="feature-copy">
-            <div class="feature-number">FULL READING · 002</div>
-            <h3>VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법</h3>
-            <p class="original-title">VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks</p>
-            <p>LoRA 행렬을 작은 부분 벡터로 쪼개고 전역 공유 vector bank의 희소한 조합으로 재구성해, 어댑터 저장·전송 비용을 극단적으로 줄이는 방법을 읽습니다.</p>
-            <div class="tags"><span class="tag">PEFT</span><span class="tag">LoRA</span><span class="tag">Compression</span></div>
-            <a class="button primary" href={`${base}papers/vb-lora/`}>전체 해설 읽기 <span class="arrow">→</span></a>
+            <div class="feature-number">FULL READING · 003</div>
+            <h3>WeDLM: 인과적 어텐션으로 Diffusion LM을 실제로 빠르게 만들기</h3>
+            <p class="original-title">WeDLM: Reconciling Diffusion Language Models with Standard Causal Attention for Fast Inference</p>
+            <p>병렬로 많은 토큰을 제안하는 것보다, 그 토큰을 얼마나 빨리 KV cache에 재사용 가능한 왼쪽 prefix로 바꾸는지가 실제 추론 속도를 결정한다는 관점에서 논문 전체를 읽습니다.</p>
+            <div class="tags"><span class="tag">Diffusion LM</span><span class="tag">Causal Attention</span><span class="tag">KV Cache</span></div>
+            <a class="button primary" href={`${base}papers/wedlm/`}>전체 해설 읽기 <span class="arrow">→</span></a>
           </div>
           <div class="feature-side">
             <div>
               <div class="feature-label">핵심 질문</div>
-              <blockquote class="feature-quote">“각 레이어의 LoRA를 따로 저장하지 않고, 공유 가능한 벡터 조각들의 조합으로 표현할 수 있을까?”</blockquote>
+              <blockquote class="feature-quote">“한 번에 여러 토큰을 복원하면서도, 기존 LLM처럼 확정된 prefix를 즉시 캐시할 수 있을까?”</blockquote>
             </div>
             <div class="feature-meta">
-              <div><b>Reading time</b>약 38분</div>
-              <div><b>Coverage</b>초록 · 본문 · 표 · 그림 · 수식 · 부록</div>
+              <div><b>Reading time</b>약 45분</div>
+              <div><b>Coverage</b>초록 · 방법 · 수식 · 전체 결과표 · 절제 실험 · 한계</div>
             </div>
           </div>
         </article>
@@ -152,7 +164,7 @@ const libraryItems = [...completedPapers, ...icmlPreview];
               <p>{paper.description}</p>
               <div class="library-paper-bottom">
                 <span>{paper.meta}<br />{paper.source}</span>
-                <span class="paper-arrow">↗</span>
+                <span class="paper-arrow">{paper.id.startsWith('FULL') ? '→' : '↗'}</span>
               </div>
             </a>
           ))}
