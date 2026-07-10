@@ -1,123 +1,212 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { icml2026Papers } from '../data/icml2026';
+
 const base = import.meta.env.BASE_URL;
-const firstPaperHref = `${base}papers/synthetic-computers-at-scale/`;
-const vbLoraHref = `${base}papers/vb-lora/`;
+const completedPapers = [
+  {
+    id: 'FULL · 001',
+    title: '장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터',
+    original: 'Synthetic Computers at Scale for Long-Horizon Productivity Simulation',
+    description: '사용자별 파일시스템과 실제 업무 산출물을 가진 합성 컴퓨터에서 한 달 분량의 장기 에이전트 작업을 시뮬레이션합니다.',
+    category: 'Agents',
+    meta: 'Agents · Simulation',
+    source: 'arXiv:2604.28181',
+    href: `${base}papers/synthetic-computers-at-scale/`,
+    status: '해설 완료',
+    confidenceClass: ''
+  },
+  {
+    id: 'FULL · 002',
+    title: 'VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법',
+    original: 'VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks',
+    description: 'LoRA 행렬을 작은 부분 벡터로 나누고 전역 vector bank의 희소한 조합으로 재구성해 어댑터 저장 비용을 줄입니다.',
+    category: 'LLM',
+    meta: 'PEFT · LoRA',
+    source: 'arXiv:2405.15179',
+    href: `${base}papers/vb-lora/`,
+    status: '해설 완료',
+    confidenceClass: ''
+  }
+];
+
+const previewMemos = ['BeaconKV', 'ReJump', 'M-CBEs', 'Singularity-aware optimization', 'DynTS', 'AdamO'];
+const icmlPreview = previewMemos
+  .map((memo) => icml2026Papers.find((paper) => paper.memo === memo))
+  .filter(Boolean)
+  .map((paper, index) => ({
+    id: `ICML · ${String(index + 1).padStart(3, '0')}`,
+    title: paper!.koreanTitle,
+    original: paper!.title,
+    description: paper!.description,
+    category: paper!.category,
+    meta: `${paper!.category} · ${paper!.presentation}`,
+    source: paper!.arxivId ? `arXiv:${paper!.arxivId}` : 'OpenReview',
+    href: paper!.openreview ?? paper!.arxiv ?? '#',
+    status: paper!.confidence === '확정' ? '원문 확인' : paper!.confidence,
+    confidenceClass: paper!.confidence === '유력' ? 'likely' : paper!.confidence === '후보 다수' ? 'multiple' : '',
+    external: true
+  }));
+
+const libraryItems = [...completedPapers, ...icmlPreview];
 ---
-<BaseLayout title="Hermes Paper Lab — 논문 지식베이스" description="논문 전체 흐름을 따라 읽는 한국어 전 논문 해설 아카이브.">
+<BaseLayout title="Paperroom — 한국어 논문 서재" description="논문을 줄이지 않고, 정확한 한국어 번역과 쉬운 해설로 끝까지 읽는 개인 연구 아카이브.">
   <main>
-    <section class="hero site-shell">
-      <span class="kicker">논문 전체 흐름 해설 아카이브</span>
-      <h1>논문을 짧게 뭉개지 않고, 처음부터 끝까지 따라 읽는 지식베이스.</h1>
-      <p>
-        디스코드에는 짧은 링크만 남기고, 실제 분석은 웹 페이지에서 봅니다. 각 논문은 초록부터 결론/부록까지 섹션 순서를 유지하며, 핵심 주장·표·원문 Figure·수식·한계·구현 아이디어를 최대한 한국어로 풀어 정리합니다.
-      </p>
-      <div class="hero-actions">
-        <a class="pill dark" href={vbLoraHref}>VB-LoRA 보기</a>
-        <a class="pill" href="#rules">작성 규칙 보기</a>
+    <section class="home-hero">
+      <div class="site-shell home-hero-grid">
+        <div>
+          <div class="eyebrow">Personal research archive</div>
+          <h1 class="home-title">논문을 줄이지 않고,<br /><em>읽을 수 있게</em> 만든다.</h1>
+        </div>
+        <div class="home-intro">
+          <p><strong>정확한 한국어 번역</strong>과 쉬운 해설을 분리해, 저자의 주장·수식·표·한계까지 원문 흐름 그대로 따라갑니다.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#library">논문 서재 열기 <span class="arrow">→</span></a>
+            <a class="button" href={`${base}collections/icml-2026/`}>ICML 2026 컬렉션</a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="section site-shell" id="papers">
-      <div class="section-header">
-        <div>
-          <h2 class="section-title">논문 목록</h2>
-          <p class="section-desc">현재는 두 편의 전체 흐름 해설이 올라가 있습니다. 이후 “이 논문 분석해서 사이트에 올려줘”라고 하면 이 목록에 계속 누적하는 구조입니다.</p>
-        </div>
+    <div class="issue-strip">
+      <div class="site-shell issue-grid">
+        <div class="issue-cell">Paperroom — 깊이 읽는 개인 논문 서재</div>
+        <div class="issue-cell">02 Full readings</div>
+        <div class="issue-cell">22 ICML notes</div>
+        <div class="issue-cell">Mobile first</div>
       </div>
+    </div>
 
-      <article class="card paper-card">
-        <div class="paper-card-body">
-          <span class="kicker">전체 흐름 해설 · arXiv:2604.28181v1</span>
-          <h3>장기 생산성 시뮬레이션을 위한 대규모 합성 컴퓨터</h3>
-          <p class="original-title">원제: Synthetic Computers at Scale for Long-Horizon Productivity Simulation</p>
-          <p>
-            사용자별 파일시스템과 문서/스프레드시트/발표자료가 들어 있는 “합성 컴퓨터”를 만들고, 그 위에서 한 달 분량의 장기 생산성 업무를 시뮬레이션해 에이전트 개선 신호를 얻는 논문입니다.
-          </p>
-          <div class="tags">
-            <span class="tag">에이전트</span>
-            <span class="tag">시뮬레이션</span>
-            <span class="tag">장기 작업</span>
-            <span class="tag">생산성</span>
-            <span class="tag">스킬</span>
+    <section class="home-section">
+      <div class="site-shell">
+        <div class="home-section-head">
+          <div>
+            <div class="section-index">01 / NOW READING</div>
+            <h2>지금 읽을 논문</h2>
           </div>
-          <div class="meta-line">
-            <span>저자: Tao Ge, Baolin Peng, Hao Cheng, Jianfeng Gao</span>
-            <span>상태: 전체 흐름 해설 완료 · 원문 Figure/수식 해설 포함</span>
-          </div>
-          <div class="hero-actions" style="justify-content:flex-start">
-            <a class="pill dark" href={firstPaperHref}>해설 열기</a>
-            <a class="pill" href="https://arxiv.org/abs/2604.28181v1">arXiv 원문</a>
-          </div>
+          <p class="section-note">완성된 해설은 초록부터 부록까지 원래 순서를 유지합니다. 모바일에서도 목차·글자 크기·본문 폭·화면 테마를 바로 조절할 수 있습니다.</p>
         </div>
-        <a class="paper-thumb" href={firstPaperHref} aria-label="첫 논문 열기">
-          <img src={`${base}images/papers/synthetic-computers/method-overview.png`} alt="합성 컴퓨터 방법론 고품질 인포그래픽" />
-        </a>
-      </article>
 
-      <article class="card paper-card" style="margin-top:20px">
-        <div class="paper-card-body">
-          <span class="kicker">전체 흐름 해설 · arXiv:2405.15179v3</span>
-          <h3>VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법</h3>
-          <p class="original-title">원제: VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks</p>
-          <p>
-            LoRA의 A/B 저랭크 행렬을 같은 길이의 부분 벡터로 나누고, 전역 공유 벡터 뱅크에서 top-k로 골라 섞어 재구성함으로써 어댑터 저장/전송 비용을 크게 낮추는 PEFT 논문입니다.
-          </p>
-          <div class="tags">
-            <span class="tag">PEFT</span>
-            <span class="tag">LoRA</span>
-            <span class="tag">벡터 뱅크</span>
-            <span class="tag">어댑터 압축</span>
-            <span class="tag">LLM 튜닝</span>
+        <article class="featured-reading">
+          <div class="feature-copy">
+            <div class="feature-number">FULL READING · 002</div>
+            <h3>VB-LoRA: 벡터 뱅크로 LoRA 저장량을 크게 줄이는 방법</h3>
+            <p class="original-title">VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks</p>
+            <p>LoRA 행렬을 작은 부분 벡터로 쪼개고 전역 공유 vector bank의 희소한 조합으로 재구성해, 어댑터 저장·전송 비용을 극단적으로 줄이는 방법을 읽습니다.</p>
+            <div class="tags"><span class="tag">PEFT</span><span class="tag">LoRA</span><span class="tag">Compression</span></div>
+            <a class="button primary" href={`${base}papers/vb-lora/`}>전체 해설 읽기 <span class="arrow">→</span></a>
           </div>
-          <div class="meta-line">
-            <span>저자: Yang Li, Shaobo Han, Shihao Ji</span>
-            <span>상태: 전체 흐름 해설 완료 · 원문 Figure/수식 해설/imggen high 시각화 포함</span>
+          <div class="feature-side">
+            <div>
+              <div class="feature-label">핵심 질문</div>
+              <blockquote class="feature-quote">“각 레이어의 LoRA를 따로 저장하지 않고, 공유 가능한 벡터 조각들의 조합으로 표현할 수 있을까?”</blockquote>
+            </div>
+            <div class="feature-meta">
+              <div><b>Reading time</b>약 38분</div>
+              <div><b>Coverage</b>초록 · 본문 · 표 · 그림 · 수식 · 부록</div>
+            </div>
           </div>
-          <div class="hero-actions" style="justify-content:flex-start">
-            <a class="pill dark" href={vbLoraHref}>해설 열기</a>
-            <a class="pill" href="https://arxiv.org/abs/2405.15179v3">arXiv 원문</a>
-          </div>
-        </div>
-        <a class="paper-thumb" href={vbLoraHref} aria-label="VB-LoRA 논문 열기">
-          <img src={`${base}images/papers/vb-lora/method-overview.png`} alt="VB-LoRA 벡터 뱅크 기반 LoRA 압축 방법 인포그래픽" />
-        </a>
-      </article>
+        </article>
+      </div>
     </section>
 
-    <section class="section site-shell" id="rules">
-      <div class="section-header">
-        <div>
-          <h2 class="section-title">작성 규칙</h2>
-          <p class="section-desc">이 사이트의 핵심 규칙은 “짧은 요약”이 아니라 “논문 전체를 따라 읽는 가이드”입니다.</p>
+    <section class="home-section" id="library">
+      <div class="site-shell">
+        <div class="home-section-head">
+          <div>
+            <div class="section-index">02 / LIBRARY</div>
+            <h2>논문 서재</h2>
+          </div>
+          <p class="section-note">제목, 분야, 핵심 개념으로 찾습니다. 완성된 전체 해설과 ICML 2026 원문 확인 노트를 한곳에 모았습니다.</p>
+        </div>
+
+        <div class="library-toolbar" data-library-controls>
+          <label class="library-search">
+            <span class="sr-only">논문 검색</span>
+            <input type="search" placeholder="논문, 방법, 키워드 검색" data-library-search />
+          </label>
+          <div class="filter-row" aria-label="논문 분야 필터">
+            <button class="filter-chip is-active" type="button" data-library-filter="all">전체</button>
+            <button class="filter-chip" type="button" data-library-filter="completed">완성</button>
+            <button class="filter-chip" type="button" data-library-filter="LLM">LLM</button>
+            <button class="filter-chip" type="button" data-library-filter="Optimization">최적화</button>
+          </div>
+        </div>
+
+        <div class="paper-library" data-library>
+          {libraryItems.map((paper) => (
+            <a
+              class="library-paper"
+              href={paper.href}
+              target={'external' in paper && paper.external ? '_blank' : undefined}
+              rel={'external' in paper && paper.external ? 'noreferrer' : undefined}
+              data-library-item
+              data-category={paper.id.startsWith('FULL') ? 'completed' : paper.category}
+              data-search={`${paper.title} ${paper.original} ${paper.description} ${paper.category} ${paper.meta}`.toLowerCase()}
+            >
+              <div class="library-paper-top">
+                <span class="library-paper-id">{paper.id}</span>
+                <span class:list={['paper-status', paper.confidenceClass]}>{paper.status}</span>
+              </div>
+              <h3>{paper.title}</h3>
+              <p>{paper.description}</p>
+              <div class="library-paper-bottom">
+                <span>{paper.meta}<br />{paper.source}</span>
+                <span class="paper-arrow">↗</span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div class="library-empty" data-library-empty>검색 조건에 맞는 논문이 없습니다.</div>
+        <div class="hero-actions">
+          <a class="button" href={`${base}collections/icml-2026/`}>ICML 2026 메모 22개 모두 보기 <span class="arrow">→</span></a>
         </div>
       </div>
-      <div class="grid three">
-        <div class="card">
-          <h3>1. 전체 구조 보존</h3>
-          <p>초록, 서론, 방법, 실험, 논의, 결론, 부록 순서를 유지하고 최대한 한국어로 번역·해설합니다.</p>
+    </section>
+
+    <section class="home-section" id="principles">
+      <div class="site-shell editorial-rules">
+        <div class="editorial-title">
+          <div class="section-index">03 / EDITORIAL RULES</div>
+          <h2>쉽게 쓰되,<br />내용은 줄이지 않는다.</h2>
         </div>
-        <div class="card">
-          <h3>2. 원문 Figure 포함</h3>
-          <p>원문 Figure는 번호별로 따로 넣고, 각 Figure 아래에 한국어 캡션 번역과 읽는 법을 덧붙입니다.</p>
-        </div>
-        <div class="card">
-          <h3>3. 수식은 LaTeX로 분리</h3>
-          <p>핵심 수식은 별도 섹션에서 LaTeX로 표시하고, 각 기호·직관·주의점을 자세히 설명합니다.</p>
-        </div>
-        <div class="card">
-          <h3>4. 원문 근거 유지</h3>
-          <p>중요 숫자, 그림/표/수식 번호, 실험 조건은 원문 기준으로 보존하고, 저자 주장과 해석을 분리합니다.</p>
-        </div>
-        <div class="card">
-          <h3>5. 이해용 고품질 시각화</h3>
-          <p>원문 Figure와 별도로 필요하면 imggen high 기반 이해용 인포그래픽을 추가합니다.</p>
-        </div>
-        <div class="card">
-          <h3>6. 외부 산출물 우선</h3>
-          <p>디스코드에는 긴 분석을 보내지 않고, HTML/GitHub Pages/이미지/PDF 같은 외부 산출물 링크를 공유합니다.</p>
+        <div class="principles">
+          <article class="principle"><div><h3>번역과 해설을 분리합니다.</h3><p>저자의 문장을 보존한 정밀 번역과, 이해를 돕는 사이트 해설을 시각적으로 구분합니다.</p></div></article>
+          <article class="principle"><div><h3>주장에는 근거 위치를 붙입니다.</h3><p>요약 문장은 해당 섹션·그림·표로 돌아갈 수 있어야 하며, 원문보다 강한 결론을 만들지 않습니다.</p></div></article>
+          <article class="principle"><div><h3>부록과 실패 조건까지 읽습니다.</h3><p>좋은 수치만 꺼내지 않고 실험 설정, 절제 실험, 한계, supplementary material까지 추적합니다.</p></div></article>
+          <article class="principle"><div><h3>숫자와 주장 강도를 보존합니다.</h3><p>may, suggest, guarantee 같은 표현과 비교 조건·표준편차·평가 모델을 번역에서 임의로 지우지 않습니다.</p></div></article>
         </div>
       </div>
     </section>
   </main>
+
+  <script is:inline>
+    (() => {
+      const search = document.querySelector('[data-library-search]');
+      const items = [...document.querySelectorAll('[data-library-item]')];
+      const filters = [...document.querySelectorAll('[data-library-filter]')];
+      const empty = document.querySelector('[data-library-empty]');
+      let category = 'all';
+
+      const update = () => {
+        const query = (search?.value || '').trim().toLowerCase();
+        let visible = 0;
+        items.forEach((item) => {
+          const categoryMatch = category === 'all' || item.dataset.category === category;
+          const queryMatch = !query || item.dataset.search.includes(query);
+          const show = categoryMatch && queryMatch;
+          item.dataset.hidden = show ? 'false' : 'true';
+          if (show) visible += 1;
+        });
+        empty?.classList.toggle('is-visible', visible === 0);
+      };
+
+      search?.addEventListener('input', update);
+      filters.forEach((button) => button.addEventListener('click', () => {
+        category = button.dataset.libraryFilter;
+        filters.forEach((item) => item.classList.toggle('is-active', item === button));
+        update();
+      }));
+    })();
+  </script>
 </BaseLayout>
