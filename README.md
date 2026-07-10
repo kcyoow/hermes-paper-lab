@@ -1,25 +1,43 @@
-# Hermes Paper Lab
+# Paperroom
 
-논문 전체 흐름을 따라 읽는 GitHub Pages 지식베이스입니다. 각 논문 페이지는 초록부터 결론/부록까지 논문 흐름을 보존하면서, 한국어 가이드 해설로 읽기 쉽게 정리합니다.
+논문을 짧게 요약해 버리지 않고, 원문의 흐름과 주장 강도를 유지하면서 한국어로 끝까지 읽는 개인 논문 서재입니다.
 
-## 명령어
+## Live site
+
+- GitHub Pages: https://kcyoow.github.io/hermes-paper-lab/
+- Repository: https://github.com/kcyoow/hermes-paper-lab
+
+## 현재 구성
+
+- 전체 흐름 해설 2편
+  - Synthetic Computers at Scale for Long-Horizon Productivity Simulation
+  - VB-LoRA: Extreme Parameter Efficient Fine-Tuning with Vector Banks
+- ICML 2026 현장 메모 22개 복원 컬렉션
+- 모바일 우선 반응형 레이아웃
+- 읽기 진행률, 글자 크기, 본문 폭, 라이트/다크 테마
+- 원문 Figure와 수식 해설을 위한 장문 리더
+
+## 편집 원칙
+
+1. 정확한 번역과 사이트 해설을 분리합니다.
+2. 초록, 서론, 방법, 실험, 결론, 부록의 순서를 보존합니다.
+3. 숫자, 수식 기호, 그림·표 번호, 비교 조건을 임의로 바꾸지 않습니다.
+4. `may`, `suggest`, `guarantee`처럼 저자의 주장 강도를 보존합니다.
+5. 단일 논문으로 특정되지 않는 메모는 `유력` 또는 `후보 다수`로 표시합니다.
+6. 논문 원문을 최종 기준으로 삼고 OpenReview/arXiv/PMLR 링크를 함께 둡니다.
+
+## Local development
 
 ```bash
 npm install
-npm run build
 npm run dev
 ```
 
-## 작성 규칙
+Production build:
 
-논문을 짧은 요약으로 압축하지 않습니다. 모든 논문 페이지는 다음 규칙을 지킵니다.
+```bash
+npm run build
+npm run preview
+```
 
-1. 논문 전체를 추출합니다.
-2. 섹션 순서를 보존합니다.
-3. 모든 주요 섹션을 가볍게 요약/해설합니다.
-4. 가능한 한 한국어로 번역·해설하되, 원제/저자명/arXiv ID/모델명/벤치마크명처럼 식별이 중요한 기술어는 원문을 병기합니다.
-5. 원문 Figure는 번호별로 따로 삽입하고, 한국어 캡션 번역과 읽는 법을 붙입니다.
-6. 핵심 수식은 별도 섹션에서 LaTeX로 표시하고, 기호 의미와 직관을 자세히 설명합니다.
-7. 그림/표/수식 번호와 중요한 숫자를 정확히 보존합니다.
-8. 저자 주장과 해석을 분리합니다.
-9. 디스코드 출력은 짧게 유지하고 페이지 링크를 공유합니다.
+`main` 브랜치에 push하면 GitHub Actions가 Astro 정적 사이트를 빌드하고 GitHub Pages에 배포합니다.
