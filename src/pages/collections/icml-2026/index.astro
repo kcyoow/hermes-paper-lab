@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { confirmedCount, icml2026Papers } from '../../../data/icml2026';
+
+const categories = ['LLM', 'Optimization', 'Privacy', 'Graphs', 'Interpretability', 'Federated', 'RL', 'Fairness'];
+const primaryHref = (paper: (typeof icml2026Papers)[number]) => paper.openreview ?? paper.arxiv ?? '#';
+const confidenceClass = (confidence: string) => confidence === '유력' ? 'likely' : confidence === '후보 다수' ? 'multiple' : '';
+---
+<BaseLayout title="ICML 2026 메모 복원 — Paperroom" description="ICML 2026 현장에서 적어둔 메모 22개를 실제 논문 제목, OpenReview, arXiv와 연결한 개인 컬렉션.">
+  <main>
+    <section class="collection-hero">
+      <div class="site-shell collection-hero-grid">
+        <div>
+          <div class="eyebrow">ICML 2026 · memo reconstruction</div>
+          <h1>현장에서 적은 단어를<br />다시 논문으로 연결하기.</h1>
+        </div>
+        <div class="collection-intro">
+          메모의 철자, 약칭, 주변 순서를 ICML 2026 채택 목록과 대조했습니다. 단일 논문으로 특정되지 않는 항목은 억지로 확정하지 않고 <strong>유력</strong> 또는 <strong>후보 다수</strong>로 표시합니다.
+        </div>
+      </div>
+    </section>
+
+    <div class="issue-strip">
+      <div class="site-shell collection-stats">
+        <div class="collection-stat"><strong>{icml2026Papers.length}</strong><span>원래 메모</span></div>
+        <div class="collection-stat"><strong>{confirmedCount}</strong><span>제목상 확정</span></div>
+        <div class="collection-stat"><strong>{icml2026Papers.length - confirmedCount}</strong><span>문맥 추정·후보 다수</span></div>
+      </div>
+    </div>
+
+    <section class="collection-body">
+      <div class="site-shell">
+        <div class="collection-note">
+          <b>읽는 법</b>
+          <p>카드를 누르면 우선 OpenReview로 이동합니다. arXiv가 확인된 논문은 카드 아래 ID로 함께 표시했습니다. 이 페이지는 번역 완료 목록이 아니라, 앞으로 전체 번역·해설을 만들기 위한 정확한 작업 대기열입니다.</p>
+        </div>
+
+        <div class="library-toolbar">
+          <label class="library-search">
+            <span class="sr-only">ICML 논문 검색</span>
+            <input type="search" placeholder="메모, 제목, 분야, 핵심 개념 검색" data-icml-search />
+          </label>
+          <div class="filter-row" aria-label="ICML 논문 분야 필터">
+            <button class="filter-chip is-active" type="button" data-icml-filter="all">전체</button>
+            {categories.map((category) => <button class="filter-chip" type="button" data-icml-filter={category}>{category}</button>)}
+          </div>
+        </div>
+
+        <div class="paper-library" data-icml-library>
+          {icml2026Papers.map((paper, index) => (
+            <a
+              class="library-paper"
+              href={primaryHref(paper)}
+              target="_blank"
+              rel="noreferrer"
+              data-icml-item
+              data-category={paper.category}
+              data-search={`${paper.memo} ${paper.title} ${paper.koreanTitle} ${paper.description} ${paper.category}`.toLowerCase()}
+            >
+              <div class="library-paper-top">
+                <span class="library-paper-id">{String(index + 1).padStart(2, '0')} · memo: {paper.memo}</span>
+                <span class:list={['paper-status', confidenceClass(paper.confidence)]}>{paper.confidence}</span>
+              </div>
+              <h3>{paper.koreanTitle}</h3>
+              <p class="original-title">{paper.title}</p>
+              <p>{paper.description}</p>
+              {paper.note && <p class="match-note">{paper.note}</p>}
+              {paper.alternatives && (
+                <ul class="alternative-list">
+                  {paper.alternatives.map((alternative) => <li>{alternative}</li>)}
+                </ul>
+              )}
+              <div class="library-paper-bottom">
+                <span>{paper.category} · {paper.presentation}<br />{paper.arxivId ? `arXiv:${paper.arxivId}` : 'OpenReview only'}</span>
+                <span class="paper-arrow">↗</span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div class="library-empty" data-icml-empty>검색 조건에 맞는 논문이 없습니다.</div>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const search = document.querySelector('[data-icml-search]');
+      const items = [...document.querySelectorAll('[data-icml-item]')];
+      const filters = [...document.querySelectorAll('[data-icml-filter]')];
+      const empty = document.querySelector('[data-icml-empty]');
+      let category = 'all';
+
+      const update = () => {
+        const query = (search?.value || '').trim().toLowerCase();
+        let visible = 0;
+        items.forEach((item) => {
+          const categoryMatch = category === 'all' || item.dataset.category === category;
+          const queryMatch = !query || item.dataset.search.includes(query);
+          const show = categoryMatch && queryMatch;
+          item.dataset.hidden = show ? 'false' : 'true';
+          if (show) visible += 1;
+        });
+        empty?.classList.toggle('is-visible', visible === 0);
+      };
+
+      search?.addEventListener('input', update);
+      filters.forEach((button) => button.addEventListener('click', () => {
+        category = button.dataset.icmlFilter;
+        filters.forEach((item) => item.classList.toggle('is-active', item === button));
+        update();
+      }));
+    })();
+  </script>
+</BaseLayout>
