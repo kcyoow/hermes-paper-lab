@@ -1,24 +1,43 @@
 ---
 import '../styles/global.css';
+
 const {
-  title = 'Hermes Paper Lab',
-  description = 'AI와 생산성 연구 논문을 전체 흐름으로 따라 읽는 한국어 지식베이스.'
+  title = 'Paperroom — 한국어 논문 서재',
+  description = '논문을 줄이지 않고, 정확한 한국어 번역과 쉬운 해설로 끝까지 읽는 개인 연구 아카이브.'
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://kcyoow.github.io');
+
 const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+const isPaper = path.includes('/papers/');
+const isCollection = path.includes('/collections/');
+const pageLabel = isPaper ? 'Long-form paper reading' : isCollection ? 'ICML 2026 collection' : 'Personal research archive';
+const canonical = new URL(path, Astro.site ?? 'https://kcyoow.github.io');
 ---
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="light" data-reader-width="focused">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f3f0e8" />
+    <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem('paperroom:theme');
+        const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = stored || preferred;
+        const scale = localStorage.getItem('paperroom:reader-scale');
+        const width = localStorage.getItem('paperroom:reader-width');
+        if (scale) document.documentElement.style.setProperty('--reader-scale', scale);
+        if (width) document.documentElement.dataset.readerWidth = width;
+      })();
+    </script>
     <script is:inline>
       window.MathJax = {
         tex: {
@@ -31,25 +50,121 @@ const base = import.meta.env.BASE_URL;
     </script>
     <script is:inline async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   </head>
-  <body>
+  <body class:list={{ 'paper-page': isPaper, 'collection-page': isCollection }}>
+    <div class="site-grain" aria-hidden="true"></div>
+    {isPaper && <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>}
+
     <header class="site-header">
-      <div class="site-shell nav">
-        <a class="brand" href={base} aria-label="Hermes Paper Lab 홈">
-          <span class="brand-mark">HL</span>
-          <span>Hermes Paper Lab</span>
+      <div class="site-shell site-nav">
+        <a class="site-brand" href={base} aria-label="Paperroom 홈">
+          <span class="site-brand-initial">P</span><span>aperroom</span><small>/ kcy</small>
         </a>
-        <nav class="nav-links" aria-label="주요 탐색">
-          <a href={`${base}#papers`}>논문 목록</a>
-          <a href={`${base}#rules`}>작성 규칙</a>
-          <a class="pill dark" href="https://github.com/kcyoow/hermes-paper-lab">GitHub</a>
+        <div class="site-context">{pageLabel}</div>
+        <nav class="site-links" aria-label="주요 탐색">
+          <a href={`${base}#library`}>서재</a>
+          <a href={`${base}collections/icml-2026/`}>ICML 2026</a>
+          <a href={`${base}#principles`}>원칙</a>
+          <button class="round-control" type="button" data-theme-toggle aria-label="화면 테마 전환" title="화면 테마 전환">
+            <span aria-hidden="true">◐</span>
+          </button>
         </nav>
       </div>
     </header>
+
     <slot />
-    <footer class="footer">
-      <div class="site-shell">
-        Hermes Paper Lab · 논문 전체 흐름 해설, 원문 근거 노트, 시각 지도. Astro와 GitHub Pages로 구축했습니다.
+
+    <footer class="site-footer">
+      <div class="site-shell footer-grid">
+        <span>Paperroom by kcy · Personal research reader</span>
+        <span>논문 원문이 최종 기준이며, 번역과 사이트 해설은 구분해 표시합니다.</span>
       </div>
     </footer>
+
+    {isPaper && (
+      <div class="reader-console" aria-label="읽기 설정">
+        <button type="button" data-reader-action="smaller" aria-label="글자 작게">A−</button>
+        <button type="button" data-reader-action="larger" aria-label="글자 크게">A+</button>
+        <button type="button" data-reader-action="width" aria-label="본문 폭 전환">↔</button>
+        <button type="button" data-theme-toggle aria-label="화면 테마 전환">◐</button>
+        <button type="button" data-reader-action="top" aria-label="맨 위로">↑</button>
+      </div>
+    )}
+
+    <nav class="mobile-dock" aria-label="모바일 빠른 탐색">
+      <a href={base}><span aria-hidden="true">⌂</span><small>홈</small></a>
+      {isPaper ? (
+        <button type="button" data-reader-action="contents"><span aria-hidden="true">☷</span><small>목차</small></button>
+      ) : (
+        <a href={`${base}#library`}><span aria-hidden="true">▦</span><small>서재</small></a>
+      )}
+      <a href={`${base}collections/icml-2026/`}><span aria-hidden="true">◫</span><small>ICML</small></a>
+      <button type="button" data-theme-toggle><span aria-hidden="true">◐</span><small>화면</small></button>
+    </nav>
+
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        const scales = [0.9, 1, 1.08, 1.16, 1.24];
+
+        const applyTheme = (theme) => {
+          root.dataset.theme = theme;
+          localStorage.setItem('paperroom:theme', theme);
+          themeMeta?.setAttribute('content', theme === 'dark' ? '#171713' : '#f3f0e8');
+        };
+
+        document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+          button.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+        });
+
+        const currentScale = () => Number.parseFloat(getComputedStyle(root).getPropertyValue('--reader-scale')) || 1;
+        const setScale = (next) => {
+          const clamped = Math.min(scales.at(-1), Math.max(scales[0], next));
+          const nearest = scales.reduce((best, value) => Math.abs(value - clamped) < Math.abs(best - clamped) ? value : best, scales[0]);
+          root.style.setProperty('--reader-scale', String(nearest));
+          localStorage.setItem('paperroom:reader-scale', String(nearest));
+        };
+
+        document.querySelectorAll('[data-reader-action]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const action = button.dataset.readerAction;
+            const index = scales.indexOf(currentScale());
+            if (action === 'smaller') setScale(scales[Math.max(0, index - 1)] ?? 1);
+            if (action === 'larger') setScale(scales[Math.min(scales.length - 1, index + 1)] ?? 1);
+            if (action === 'width') {
+              const next = root.dataset.readerWidth === 'wide' ? 'focused' : 'wide';
+              root.dataset.readerWidth = next;
+              localStorage.setItem('paperroom:reader-width', next);
+            }
+            if (action === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (action === 'contents') document.querySelector('.toc')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        });
+
+        const progress = document.querySelector('[data-reading-progress]');
+        if (progress) {
+          const updateProgress = () => {
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+            progress.style.transform = `scaleX(${ratio})`;
+          };
+          updateProgress();
+          window.addEventListener('scroll', updateProgress, { passive: true });
+        }
+
+        const tocLinks = [...document.querySelectorAll('.toc a[href^="#"]')];
+        const targets = tocLinks
+          .map((link) => document.querySelector(link.getAttribute('href')))
+          .filter(Boolean);
+        if (targets.length) {
+          const observer = new IntersectionObserver((entries) => {
+            const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+            if (!visible) return;
+            tocLinks.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === `#${visible.target.id}`));
+          }, { rootMargin: '-18% 0px -68% 0px', threshold: [0, 0.15, 0.5] });
+          targets.forEach((target) => observer.observe(target));
+        }
+      })();
+    </script>
   </body>
 </html>
