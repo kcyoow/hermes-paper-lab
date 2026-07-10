@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" role="img" aria-labelledby="title desc">
+  <title id="title">Topological Reordering 이해용 시각화</title>
+  <desc id="desc">관측된 토큰을 물리적 배열의 앞쪽으로 옮기면서 각 토큰의 원래 논리적 위치 ID를 보존하는 과정을 보여준다.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f2e8}.panel{fill:#fffdf8;stroke:#d8d0c1;stroke-width:2}.ink{fill:#1d1c18}.muted{fill:#6d685f}.obs{fill:#dcebd7;stroke:#4f8a4b;stroke-width:2}.mask{fill:#eeeae2;stroke:#8f8a81;stroke-width:2;stroke-dasharray:5 4}.pos{fill:#e2eaf5;stroke:#5b75a8;stroke-width:1.6}.accent{fill:#f7ddd3;stroke:#c85737;stroke-width:1.6}.line{stroke:#8d877d;stroke-width:2;fill:none}.greenline{stroke:#5f9858;stroke-width:2.5;fill:none}.sans{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif}.serif{font-family:'Noto Serif KR','AppleMyungjo',serif}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.strong{font-weight:700}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#8d877d"/></marker>
+    <marker id="garrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#5f9858"/></marker>
+  </defs>
+  <rect class="bg" width="1000" height="760" rx="28"/>
+  <text x="50" y="60" class="ink serif strong" font-size="34">Topological Reordering: 계산 순서와 문장 위치를 분리하기</text>
+  <text x="50" y="96" class="muted sans" font-size="20">토큰의 의미상 위치는 유지하고, GPU가 보는 배열 순서만 바꿉니다.</text>
+
+  <rect x="40" y="125" width="920" height="220" rx="24" class="panel"/>
+  <text x="70" y="166" class="ink sans strong" font-size="24">1. 원래 논리적 문장 순서</text>
+  <text x="70" y="195" class="muted sans" font-size="17">초록은 이미 관측된 토큰, 회색은 복원해야 할 마스크입니다.</text>
+
+  <g transform="translate(86 220)">
+    <rect x="0" y="0" width="62" height="52" rx="10" class="obs"/><text x="31" y="34" text-anchor="middle" class="ink sans strong" font-size="23">A</text>
+    <rect x="78" y="0" width="62" height="52" rx="10" class="mask"/><text x="109" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <rect x="156" y="0" width="62" height="52" rx="10" class="obs"/><text x="187" y="34" text-anchor="middle" class="ink sans strong" font-size="23">C</text>
+    <rect x="234" y="0" width="62" height="52" rx="10" class="obs"/><text x="265" y="34" text-anchor="middle" class="ink sans strong" font-size="23">D</text>
+    <rect x="312" y="0" width="62" height="52" rx="10" class="mask"/><text x="343" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <rect x="390" y="0" width="62" height="52" rx="10" class="obs"/><text x="421" y="34" text-anchor="middle" class="ink sans strong" font-size="23">F</text>
+    <rect x="468" y="0" width="62" height="52" rx="10" class="mask"/><text x="499" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <rect x="546" y="0" width="62" height="52" rx="10" class="obs"/><text x="577" y="34" text-anchor="middle" class="ink sans strong" font-size="23">H</text>
+    <rect x="624" y="0" width="62" height="52" rx="10" class="obs"/><text x="655" y="34" text-anchor="middle" class="ink sans strong" font-size="23">I</text>
+    <rect x="702" y="0" width="62" height="52" rx="10" class="mask"/><text x="733" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <g transform="translate(0 65)">
+      <rect x="8" y="0" width="46" height="28" rx="14" class="pos"/><text x="31" y="20" text-anchor="middle" class="mono" font-size="15">1</text>
+      <rect x="86" y="0" width="46" height="28" rx="14" class="pos"/><text x="109" y="20" text-anchor="middle" class="mono" font-size="15">2</text>
+      <rect x="164" y="0" width="46" height="28" rx="14" class="pos"/><text x="187" y="20" text-anchor="middle" class="mono" font-size="15">3</text>
+      <rect x="242" y="0" width="46" height="28" rx="14" class="pos"/><text x="265" y="20" text-anchor="middle" class="mono" font-size="15">4</text>
+      <rect x="320" y="0" width="46" height="28" rx="14" class="pos"/><text x="343" y="20" text-anchor="middle" class="mono" font-size="15">5</text>
+      <rect x="398" y="0" width="46" height="28" rx="14" class="pos"/><text x="421" y="20" text-anchor="middle" class="mono" font-size="15">6</text>
+      <rect x="476" y="0" width="46" height="28" rx="14" class="pos"/><text x="499" y="20" text-anchor="middle" class="mono" font-size="15">7</text>
+      <rect x="554" y="0" width="46" height="28" rx="14" class="pos"/><text x="577" y="20" text-anchor="middle" class="mono" font-size="15">8</text>
+      <rect x="632" y="0" width="46" height="28" rx="14" class="pos"/><text x="655" y="20" text-anchor="middle" class="mono" font-size="15">9</text>
+      <rect x="710" y="0" width="46" height="28" rx="14" class="pos"/><text x="733" y="20" text-anchor="middle" class="mono" font-size="15">10</text>
+    </g>
+  </g>
+  <text x="840" y="319" text-anchor="end" class="muted sans" font-size="15">아래 숫자 = 논리적 위치 ID</text>
+
+  <path d="M500 360 V402" class="line" marker-end="url(#arrow)"/>
+  <rect x="40" y="415" width="920" height="278" rx="24" class="panel"/>
+  <text x="70" y="456" class="ink sans strong" font-size="24">2. 물리적 계산 배열을 재정렬</text>
+  <text x="70" y="485" class="muted sans" font-size="17">관측 토큰은 앞쪽, 마스크는 뒤쪽으로 이동합니다. 위치 ID는 원래 값을 그대로 들고 갑니다.</text>
+
+  <g transform="translate(86 510)">
+    <rect x="0" y="0" width="62" height="52" rx="10" class="obs"/><text x="31" y="34" text-anchor="middle" class="ink sans strong" font-size="23">A</text>
+    <rect x="78" y="0" width="62" height="52" rx="10" class="obs"/><text x="109" y="34" text-anchor="middle" class="ink sans strong" font-size="23">C</text>
+    <rect x="156" y="0" width="62" height="52" rx="10" class="obs"/><text x="187" y="34" text-anchor="middle" class="ink sans strong" font-size="23">D</text>
+    <rect x="234" y="0" width="62" height="52" rx="10" class="obs"/><text x="265" y="34" text-anchor="middle" class="ink sans strong" font-size="23">F</text>
+    <rect x="312" y="0" width="62" height="52" rx="10" class="obs"/><text x="343" y="34" text-anchor="middle" class="ink sans strong" font-size="23">H</text>
+    <rect x="390" y="0" width="62" height="52" rx="10" class="obs"/><text x="421" y="34" text-anchor="middle" class="ink sans strong" font-size="23">I</text>
+    <rect x="468" y="0" width="62" height="52" rx="10" class="mask"/><text x="499" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <rect x="546" y="0" width="62" height="52" rx="10" class="mask"/><text x="577" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <rect x="624" y="0" width="62" height="52" rx="10" class="mask"/><text x="655" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <rect x="702" y="0" width="62" height="52" rx="10" class="mask"/><text x="733" y="34" text-anchor="middle" class="muted sans strong" font-size="22">[M]</text>
+    <g transform="translate(0 65)">
+      <rect x="8" y="0" width="46" height="28" rx="14" class="pos"/><text x="31" y="20" text-anchor="middle" class="mono" font-size="15">1</text>
+      <rect x="86" y="0" width="46" height="28" rx="14" class="pos"/><text x="109" y="20" text-anchor="middle" class="mono" font-size="15">3</text>
+      <rect x="164" y="0" width="46" height="28" rx="14" class="pos"/><text x="187" y="20" text-anchor="middle" class="mono" font-size="15">4</text>
+      <rect x="242" y="0" width="46" height="28" rx="14" class="pos"/><text x="265" y="20" text-anchor="middle" class="mono" font-size="15">6</text>
+      <rect x="320" y="0" width="46" height="28" rx="14" class="pos"/><text x="343" y="20" text-anchor="middle" class="mono" font-size="15">8</text>
+      <rect x="398" y="0" width="46" height="28" rx="14" class="pos"/><text x="421" y="20" text-anchor="middle" class="mono" font-size="15">9</text>
+      <rect x="476" y="0" width="46" height="28" rx="14" class="pos"/><text x="499" y="20" text-anchor="middle" class="mono" font-size="15">2</text>
+      <rect x="554" y="0" width="46" height="28" rx="14" class="pos"/><text x="577" y="20" text-anchor="middle" class="mono" font-size="15">5</text>
+      <rect x="632" y="0" width="46" height="28" rx="14" class="pos"/><text x="655" y="20" text-anchor="middle" class="mono" font-size="15">7</text>
+      <rect x="710" y="0" width="46" height="28" rx="14" class="pos"/><text x="733" y="20" text-anchor="middle" class="mono" font-size="15">10</text>
+    </g>
+  </g>
+
+  <path d="M115 620 H500" class="greenline" marker-end="url(#garrow)"/>
+  <text x="300" y="648" text-anchor="middle" class="muted sans" font-size="16">관측 토큰들이 모두 causal mask의 왼쪽 문맥에 위치</text>
+  <path d="M500 620 H852" class="line" marker-end="url(#arrow)"/>
+  <text x="680" y="648" text-anchor="middle" class="muted sans" font-size="16">마스크 토큰은 모든 관측 토큰을 볼 수 있음</text>
+
+  <rect x="112" y="704" width="776" height="38" rx="19" class="accent"/>
+  <text x="500" y="730" text-anchor="middle" class="ink sans strong" font-size="18">핵심: 배열 순서를 바꿔도 RoPE에는 원래 위치 ID를 넣으므로 문장 속 위치 정보는 보존됩니다.</text>
+</svg>
