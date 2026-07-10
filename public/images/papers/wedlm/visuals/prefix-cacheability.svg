@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720" role="img" aria-labelledby="title desc">
+  <title id="title">Prefix cacheability 이해용 시각화</title>
+  <desc id="desc">네트워크가 처리한 토큰 가운데 연속된 왼쪽 prefix로 남아 KV cache에 재사용되는 비율이 높고 낮을 때의 차이를 비교한다.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f2e8}.panel{fill:#fffdf8;stroke:#d8d0c1;stroke-width:2}.ink{fill:#1d1c18}.muted{fill:#6d685f}.blue{fill:#dce8f4;stroke:#426c91;stroke-width:1.7}.green{fill:#dcebd7;stroke:#4f8a4b;stroke-width:1.7}.orange{fill:#f7ddd3;stroke:#c85737;stroke-width:1.7}.empty{fill:#f2efe8;stroke:#aaa397;stroke-width:1.5;stroke-dasharray:5 4}.chip{fill:#eee9df;stroke:#d1cabd}.rule{stroke:#d8d0c1;stroke-width:2}.strong{font-weight:700}.sans{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif}.serif{font-family:'Noto Serif KR','AppleMyungjo',serif}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#6d685f"/></marker>
+  </defs>
+  <rect class="bg" width="1000" height="720" rx="28"/>
+  <text x="50" y="60" class="ink serif strong" font-size="34">Prefix cacheability: 한 번 계산한 토큰이 얼마나 남는가</text>
+  <text x="50" y="96" class="muted sans" font-size="20">설명용 예시이며, 아래 숫자는 논문의 특정 실험값이 아닙니다.</text>
+
+  <rect x="210" y="120" width="580" height="64" rx="18" class="panel"/>
+  <text x="500" y="148" text-anchor="middle" class="muted sans" font-size="17">최종적으로 생성되어 cache에 남은 새 토큰 수</text>
+  <text x="500" y="173" text-anchor="middle" class="ink mono strong" font-size="23">p_cache = N_gen / N_fwd</text>
+
+  <rect x="35" y="210" width="450" height="430" rx="24" class="panel"/>
+  <rect x="515" y="210" width="450" height="430" rx="24" class="panel"/>
+
+  <text x="65" y="250" class="ink sans strong" font-size="27">높은 p_cache</text>
+  <text x="65" y="278" class="muted sans" font-size="18">처리한 계산이 거의 그대로 연속 prefix가 됨</text>
+  <text x="545" y="250" class="ink sans strong" font-size="27">낮은 p_cache</text>
+  <text x="545" y="278" class="muted sans" font-size="18">중간이 비어 많은 계산을 다음 단계에서 반복함</text>
+
+  <text x="65" y="321" class="muted sans strong" font-size="17">1. 네트워크가 처리한 토큰 인스턴스 · N_fwd = 15</text>
+  <g transform="translate(66 338)">
+    <rect class="blue" x="0" y="0" width="20" height="30" rx="5"/><rect class="blue" x="24" y="0" width="20" height="30" rx="5"/><rect class="blue" x="48" y="0" width="20" height="30" rx="5"/><rect class="blue" x="72" y="0" width="20" height="30" rx="5"/><rect class="blue" x="96" y="0" width="20" height="30" rx="5"/><rect class="blue" x="120" y="0" width="20" height="30" rx="5"/><rect class="blue" x="144" y="0" width="20" height="30" rx="5"/><rect class="blue" x="168" y="0" width="20" height="30" rx="5"/><rect class="blue" x="192" y="0" width="20" height="30" rx="5"/><rect class="blue" x="216" y="0" width="20" height="30" rx="5"/><rect class="blue" x="240" y="0" width="20" height="30" rx="5"/><rect class="blue" x="264" y="0" width="20" height="30" rx="5"/><rect class="blue" x="288" y="0" width="20" height="30" rx="5"/><rect class="blue" x="312" y="0" width="20" height="30" rx="5"/><rect class="blue" x="336" y="0" width="20" height="30" rx="5"/>
+  </g>
+  <text x="65" y="407" class="muted sans strong" font-size="17">2. 실제로 cache에 남은 연속 prefix · N_gen = 14</text>
+  <g transform="translate(66 424)">
+    <rect class="green" x="0" y="0" width="20" height="30" rx="5"/><rect class="green" x="24" y="0" width="20" height="30" rx="5"/><rect class="green" x="48" y="0" width="20" height="30" rx="5"/><rect class="green" x="72" y="0" width="20" height="30" rx="5"/><rect class="green" x="96" y="0" width="20" height="30" rx="5"/><rect class="green" x="120" y="0" width="20" height="30" rx="5"/><rect class="green" x="144" y="0" width="20" height="30" rx="5"/><rect class="green" x="168" y="0" width="20" height="30" rx="5"/><rect class="green" x="192" y="0" width="20" height="30" rx="5"/><rect class="green" x="216" y="0" width="20" height="30" rx="5"/><rect class="green" x="240" y="0" width="20" height="30" rx="5"/><rect class="green" x="264" y="0" width="20" height="30" rx="5"/><rect class="green" x="288" y="0" width="20" height="30" rx="5"/><rect class="green" x="312" y="0" width="20" height="30" rx="5"/><rect class="empty" x="336" y="0" width="20" height="30" rx="5"/>
+  </g>
+  <rect x="65" y="492" width="360" height="82" rx="16" fill="#eef6ea" stroke="#b8d4b1"/>
+  <text x="245" y="526" text-anchor="middle" class="ink mono strong" font-size="27">14 / 15 ≈ 0.93</text>
+  <text x="245" y="555" text-anchor="middle" class="muted sans" font-size="18">재계산 ↓ · KV 재사용 ↑ · 속도 ↑</text>
+
+  <text x="545" y="321" class="muted sans strong" font-size="17">1. 네트워크가 처리한 토큰 인스턴스 · N_fwd = 15</text>
+  <g transform="translate(546 338)">
+    <rect class="blue" x="0" y="0" width="20" height="30" rx="5"/><rect class="blue" x="24" y="0" width="20" height="30" rx="5"/><rect class="blue" x="48" y="0" width="20" height="30" rx="5"/><rect class="blue" x="72" y="0" width="20" height="30" rx="5"/><rect class="blue" x="96" y="0" width="20" height="30" rx="5"/><rect class="blue" x="120" y="0" width="20" height="30" rx="5"/><rect class="blue" x="144" y="0" width="20" height="30" rx="5"/><rect class="blue" x="168" y="0" width="20" height="30" rx="5"/><rect class="blue" x="192" y="0" width="20" height="30" rx="5"/><rect class="blue" x="216" y="0" width="20" height="30" rx="5"/><rect class="blue" x="240" y="0" width="20" height="30" rx="5"/><rect class="blue" x="264" y="0" width="20" height="30" rx="5"/><rect class="blue" x="288" y="0" width="20" height="30" rx="5"/><rect class="blue" x="312" y="0" width="20" height="30" rx="5"/><rect class="blue" x="336" y="0" width="20" height="30" rx="5"/>
+  </g>
+  <text x="545" y="407" class="muted sans strong" font-size="17">2. 왼쪽부터 연속으로 cache 가능한 prefix · N_gen = 5</text>
+  <g transform="translate(546 424)">
+    <rect class="green" x="0" y="0" width="20" height="30" rx="5"/><rect class="green" x="24" y="0" width="20" height="30" rx="5"/><rect class="green" x="48" y="0" width="20" height="30" rx="5"/><rect class="green" x="72" y="0" width="20" height="30" rx="5"/><rect class="green" x="96" y="0" width="20" height="30" rx="5"/>
+    <rect class="orange" x="120" y="0" width="20" height="30" rx="5"/><rect class="orange" x="144" y="0" width="20" height="30" rx="5"/><rect class="orange" x="168" y="0" width="20" height="30" rx="5"/><rect class="orange" x="192" y="0" width="20" height="30" rx="5"/><rect class="orange" x="216" y="0" width="20" height="30" rx="5"/><rect class="orange" x="240" y="0" width="20" height="30" rx="5"/><rect class="orange" x="264" y="0" width="20" height="30" rx="5"/><rect class="orange" x="288" y="0" width="20" height="30" rx="5"/><rect class="orange" x="312" y="0" width="20" height="30" rx="5"/><rect class="orange" x="336" y="0" width="20" height="30" rx="5"/>
+  </g>
+  <rect x="545" y="492" width="360" height="82" rx="16" fill="#fff0e9" stroke="#e3b3a4"/>
+  <text x="725" y="526" text-anchor="middle" class="ink mono strong" font-size="27">5 / 15 ≈ 0.33</text>
+  <text x="725" y="555" text-anchor="middle" class="muted sans" font-size="18">재계산 ↑ · KV 재사용 ↓ · 속도 ↓</text>
+
+  <line x1="65" y1="600" x2="425" y2="600" class="rule"/>
+  <line x1="545" y1="600" x2="905" y2="600" class="rule"/>
+  <rect x="66" y="612" width="18" height="18" rx="4" class="green"/><text x="94" y="627" class="muted sans" font-size="16">cache에 남는 연속 prefix</text>
+  <rect x="276" y="612" width="18" height="18" rx="4" class="orange"/><text x="304" y="627" class="muted sans" font-size="16">다시 계산될 토큰</text>
+
+  <path d="M160 674 H840" stroke="#6d685f" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="500" y="665" text-anchor="middle" class="ink sans strong" font-size="19">WeDLM의 목표: 병렬 제안을 왼쪽부터 빠르게 확정해 p_cache를 높이기</text>
+</svg>
