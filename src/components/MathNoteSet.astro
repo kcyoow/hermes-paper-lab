@@ -21,13 +21,69 @@ const { notes = [], variant = 'compact' }: Props = Astro.props;
 const base = import.meta.env.BASE_URL;
 const wrapperClass = variant === 'full' ? 'math-list' : 'inline-math-notes';
 const cardClass = variant === 'full' ? 'math-card' : 'math-card compact';
+
+// The WeDLM page was initially materialized from a compact draft. Keep the
+// displayed equations faithful to the paper even if that generated draft is
+// recreated during the build step.
+const formulaCorrections: Record<string, string> = {
+  '수식 3 — Masked Diffusion LM의 복원 손실': String.raw`\[
+\mathcal{L}(\theta)
+= -\mathbb{E}_{\gamma,\mathbf{x}_0,\mathbf{x}_\gamma}
+\left[
+\frac{1}{\gamma}\sum_{i=1}^{L}
+\mathbf{1}\!\left[x_\gamma^{(i)}=\mathbf{M}\right]
+\log p_\theta\!\left(x_0^{(i)}\mid\mathbf{x}_\gamma\right)
+\right]
+\]`,
+  '수식 4 — Prefix Cacheability': String.raw`\[
+p_{\mathrm{cache}}\triangleq
+\frac{N_{\mathrm{gen}}}{N_{\mathrm{fwd}}}\in(0,1],
+\qquad
+\frac{1}{p_{\mathrm{cache}}}\;\text{is the average recomputation factor}
+\]`,
+  '수식 5–6 — 물리적 순서와 논리적 위치의 분리': String.raw`\[
+\begin{aligned}
+\tilde{\mathbf{x}}
+&=\left[
+\underbrace{x_{o_1},\ldots,x_{o_{N_o}}}_{\text{observed tokens}},\;
+\underbrace{\texttt{[M]},\ldots,\texttt{[M]}}_{N_m\text{ mask tokens}}
+\right],\\[4pt]
+\tilde{\mathbf{p}}
+&=\left[
+\underbrace{o_1,\ldots,o_{N_o}}_{\mathbf{p}_o},\;
+\underbrace{m_1,\ldots,m_{N_m}}_{\mathbf{p}_m}
+\right]
+\end{aligned}
+\]`,
+  '수식 10 — Dual-Stream Masking 손실': String.raw`\[
+\mathcal{L}(\theta)
+= -\mathbb{E}_{\{\gamma_k\},\mathbf{x}_0}
+\left[
+\sum_{k=1}^{K}\frac{1}{\gamma_k}
+\sum_{j\in\mathcal{M}_k}
+\log P_\theta\!\left(
+ x_0^{(j)}\mid
+ \mathbf{x}_o^{(<k)},
+ \tilde{\mathbf{x}}_t^{(k,<j)}
+\right)
+\right]
+\]`,
+  '수식 11 — 거리 패널티가 포함된 엔트로피': String.raw`\[
+\begin{aligned}
+H_i &= -\sum_v p_i(v)\log p_i(v),\\
+\tilde{H}_i &= H_i+\lambda\cdot d_i,\qquad \lambda>0
+\end{aligned}
+\]`
+};
+
+const displayedFormula = (item: MathNote) => formulaCorrections[item.id] ?? item.formula;
 ---
 {notes.length > 0 && (
   <div class={wrapperClass}>
     {notes.map((item) => (
       <article class={cardClass}>
         <h3>{item.id}</h3>
-        <div class="math-display" set:html={item.formula}></div>
+        <div class="math-display" set:html={displayedFormula(item)}></div>
         {item.visual && (
           <figure class="math-visual">
             <img src={`${base}${item.visual.src}`} alt={item.visual.alt} loading="lazy" />
