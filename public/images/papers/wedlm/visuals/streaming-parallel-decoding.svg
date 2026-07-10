@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 780" role="img" aria-labelledby="title desc">
+  <title id="title">Streaming Parallel Decoding 이해용 시각화</title>
+  <desc id="desc">고정 블록 방식이 블록 전체가 끝날 때까지 기다리는 것과 달리 WeDLM이 왼쪽부터 연속된 토큰을 즉시 커밋하고 오른쪽에 새 마스크를 보충하는 과정을 비교한다.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f2e8}.panel{fill:#fffdf8;stroke:#d8d0c1;stroke-width:2}.ink{fill:#1d1c18}.muted{fill:#6d685f}.prefix{fill:#dcebd7;stroke:#4f8a4b;stroke-width:2}.proposal{fill:#dce8f4;stroke:#426c91;stroke-width:2}.waiting{fill:#f7ddd3;stroke:#c85737;stroke-width:2}.mask{fill:#eeeae2;stroke:#8f8a81;stroke-width:2;stroke-dasharray:5 4}.arrow{stroke:#6d685f;stroke-width:2.4;fill:none}.greenarrow{stroke:#4f8a4b;stroke-width:2.6;fill:none}.orange{fill:#fff0e9;stroke:#e3b3a4}.greenbox{fill:#eef6ea;stroke:#b8d4b1}.sans{font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif}.serif{font-family:'Noto Serif KR','AppleMyungjo',serif}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.strong{font-weight:700}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#6d685f"/></marker>
+    <marker id="garrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#4f8a4b"/></marker>
+  </defs>
+  <rect class="bg" width="1000" height="780" rx="28"/>
+  <text x="50" y="60" class="ink serif strong" font-size="34">Streaming Parallel Decoding: 확정하고, 바로 채우고, 계속 전진하기</text>
+  <text x="50" y="96" class="muted sans" font-size="20">아래는 작동 원리를 단순화한 예시이며, 한 단계에서 확정되는 토큰 수는 입력마다 달라집니다.</text>
+
+  <rect x="40" y="125" width="920" height="250" rx="24" class="panel"/>
+  <text x="70" y="168" class="ink sans strong" font-size="25">일반적인 고정 block 방식</text>
+  <text x="70" y="197" class="muted sans" font-size="17">블록 전체가 완성될 때까지 해당 블록의 KV를 확정하지 못해 기다림과 재계산이 생깁니다.</text>
+
+  <text x="75" y="247" class="muted mono strong" font-size="16">t = 0</text>
+  <g transform="translate(150 221)">
+    <rect x="0" y="0" width="44" height="38" rx="8" class="prefix"/><text x="22" y="25" text-anchor="middle" class="ink sans strong" font-size="16">P</text>
+    <rect x="54" y="0" width="44" height="38" rx="8" class="mask"/><rect x="108" y="0" width="44" height="38" rx="8" class="mask"/><rect x="162" y="0" width="44" height="38" rx="8" class="mask"/><rect x="216" y="0" width="44" height="38" rx="8" class="mask"/><rect x="270" y="0" width="44" height="38" rx="8" class="mask"/><rect x="324" y="0" width="44" height="38" rx="8" class="mask"/>
+  </g>
+  <path d="M555 240 H625" class="arrow" marker-end="url(#arrow)"/>
+  <text x="650" y="247" class="muted sans" font-size="16">6개 위치를 병렬 예측</text>
+
+  <text x="75" y="307" class="muted mono strong" font-size="16">t = 1</text>
+  <g transform="translate(150 281)">
+    <rect x="0" y="0" width="44" height="38" rx="8" class="prefix"/><text x="22" y="25" text-anchor="middle" class="ink sans strong" font-size="16">P</text>
+    <rect x="54" y="0" width="44" height="38" rx="8" class="proposal"/><text x="76" y="25" text-anchor="middle" class="ink sans strong" font-size="16">a</text>
+    <rect x="108" y="0" width="44" height="38" rx="8" class="waiting"/><text x="130" y="25" text-anchor="middle" class="ink sans strong" font-size="16">?</text>
+    <rect x="162" y="0" width="44" height="38" rx="8" class="proposal"/><text x="184" y="25" text-anchor="middle" class="ink sans strong" font-size="16">c</text>
+    <rect x="216" y="0" width="44" height="38" rx="8" class="proposal"/><text x="238" y="25" text-anchor="middle" class="ink sans strong" font-size="16">d</text>
+    <rect x="270" y="0" width="44" height="38" rx="8" class="waiting"/><text x="292" y="25" text-anchor="middle" class="ink sans strong" font-size="16">?</text>
+    <rect x="324" y="0" width="44" height="38" rx="8" class="proposal"/><text x="346" y="25" text-anchor="middle" class="ink sans strong" font-size="16">f</text>
+  </g>
+  <rect x="570" y="274" width="315" height="52" rx="14" class="orange"/>
+  <text x="727" y="296" text-anchor="middle" class="ink sans strong" font-size="17">중간 빈칸이 남아 block 전체 대기</text>
+  <text x="727" y="316" text-anchor="middle" class="muted sans" font-size="14">확정된 듯 보이는 토큰도 다시 계산될 수 있음</text>
+
+  <rect x="40" y="400" width="920" height="300" rx="24" class="panel"/>
+  <text x="70" y="443" class="ink sans strong" font-size="25">WeDLM Streaming Parallel Decoding</text>
+  <text x="70" y="472" class="muted sans" font-size="17">왼쪽부터 연속된 확신 토큰을 즉시 commit하고, 오른쪽에 같은 수의 새 mask를 보충합니다.</text>
+
+  <text x="75" y="526" class="muted mono strong" font-size="16">t = 0</text>
+  <g transform="translate(150 500)">
+    <rect x="0" y="0" width="44" height="38" rx="8" class="prefix"/><text x="22" y="25" text-anchor="middle" class="ink sans strong" font-size="16">P</text>
+    <rect x="54" y="0" width="44" height="38" rx="8" class="mask"/><rect x="108" y="0" width="44" height="38" rx="8" class="mask"/><rect x="162" y="0" width="44" height="38" rx="8" class="mask"/><rect x="216" y="0" width="44" height="38" rx="8" class="mask"/><rect x="270" y="0" width="44" height="38" rx="8" class="mask"/><rect x="324" y="0" width="44" height="38" rx="8" class="mask"/>
+  </g>
+  <path d="M555 519 H625" class="arrow" marker-end="url(#arrow)"/>
+  <text x="650" y="526" class="muted sans" font-size="16">여러 mask를 동시에 제안</text>
+
+  <text x="75" y="590" class="muted mono strong" font-size="16">t = 1</text>
+  <g transform="translate(150 564)">
+    <rect x="0" y="0" width="44" height="38" rx="8" class="prefix"/><text x="22" y="25" text-anchor="middle" class="ink sans strong" font-size="16">P</text>
+    <rect x="54" y="0" width="44" height="38" rx="8" class="prefix"/><text x="76" y="25" text-anchor="middle" class="ink sans strong" font-size="16">a</text>
+    <rect x="108" y="0" width="44" height="38" rx="8" class="prefix"/><text x="130" y="25" text-anchor="middle" class="ink sans strong" font-size="16">b</text>
+    <rect x="162" y="0" width="44" height="38" rx="8" class="proposal"/><text x="184" y="25" text-anchor="middle" class="ink sans strong" font-size="16">c</text>
+    <rect x="216" y="0" width="44" height="38" rx="8" class="waiting"/><text x="238" y="25" text-anchor="middle" class="ink sans strong" font-size="16">?</text>
+    <rect x="270" y="0" width="44" height="38" rx="8" class="mask"/><rect x="324" y="0" width="44" height="38" rx="8" class="mask"/>
+  </g>
+  <path d="M205 612 H320" class="greenarrow" marker-end="url(#garrow)"/>
+  <text x="260" y="640" text-anchor="middle" class="muted sans strong" font-size="15">a, b 즉시 commit</text>
+  <path d="M512 612 H625" class="arrow" marker-end="url(#arrow)"/>
+  <text x="650" y="590" class="muted sans" font-size="15">commit한 2칸만큼</text>
+  <text x="650" y="611" class="muted sans" font-size="15">오른쪽에 새 mask refill</text>
+
+  <rect x="80" y="658" width="820" height="28" rx="14" class="greenbox"/>
+  <text x="490" y="678" text-anchor="middle" class="ink sans strong" font-size="16">파이프라인을 멈추지 않고 매 forward마다 cache 가능한 prefix를 조금씩 성장시킵니다.</text>
+
+  <rect x="90" y="720" width="820" height="42" rx="18" fill="#eef4fa" stroke="#a9bfd3"/>
+  <text x="500" y="746" text-anchor="middle" class="ink sans" font-size="17"><tspan class="strong">τ</tspan>는 어떤 예측을 받아들일지, <tspan class="strong">λ·d</tspan>는 더 왼쪽 위치를 얼마나 우선할지 조절합니다.</text>
+</svg>
