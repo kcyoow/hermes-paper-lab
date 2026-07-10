@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "materialize": "node scripts/materialize-papers.mjs",
+    "predev": "npm run materialize",
     "dev": "astro dev --host 0.0.0.0",
+    "prebuild": "npm run materialize",
     "build": "astro build",
     "preview": "astro preview --host 0.0.0.0"
   },
