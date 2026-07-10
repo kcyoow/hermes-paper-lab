@@ -13,12 +13,13 @@ interface Props {
 
 const { figures = [] }: Props = Astro.props;
 const base = import.meta.env.BASE_URL;
+const figureSrc = (src: string) => src.startsWith('http://') || src.startsWith('https://') ? src : `${base}${src}`;
 ---
 {figures.length > 0 && (
   <div class="inline-source-figures">
     {figures.map((figure) => (
       <figure class={figure.wide ? 'source-figure-card wide' : 'source-figure-card'}>
-        <img src={`${base}${figure.src}`} alt={`${figure.id} — 원문 그림`} loading="lazy" />
+        <img src={figureSrc(figure.src)} alt={`${figure.id} — 원문 그림`} loading="lazy" />
         <figcaption class="source-figure-body">
           <h3>{figure.id}</h3>
           <p><strong>원문 캡션 한국어 번역:</strong> {figure.caption}</p>
