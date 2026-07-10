@@ -1,0 +1,64 @@
+.explanatory-visual {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.explanatory-visual img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.explanatory-visual figcaption {
+  background: var(--surface);
+}
+
+@media (max-width: 600px) {
+  .explanatory-visual {
+    margin-top: 16px;
+    border: 1px solid var(--line);
+    background: var(--surface-strong);
+  }
+
+  .explanatory-visual::before {
+    content: '↔  좌우로 밀어 크게 보기';
+    position: sticky;
+    z-index: 2;
+    top: 8px;
+    left: 10px;
+    display: inline-flex;
+    width: max-content;
+    margin: 8px 0 0 8px;
+    padding: 7px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    color: var(--muted);
+    font: 600 9px/1 var(--mono);
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(10px);
+  }
+
+  .explanatory-visual img {
+    width: 780px;
+    min-width: 780px;
+    max-width: none;
+    margin-top: -29px;
+  }
+
+  .explanatory-visual figcaption {
+    position: sticky;
+    left: 0;
+    width: calc(100vw - 58px);
+    min-width: calc(100vw - 58px);
+    padding: 12px;
+    border-top: 1px solid var(--line);
+  }
+}
