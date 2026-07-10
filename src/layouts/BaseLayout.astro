@@ -48,7 +48,7 @@ const canonical = new URL(path, Astro.site ?? 'https://kcyoow.github.io');
         svg: { fontCache: 'global' }
       };
     </script>
-    <script is:inline async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script is:inline defer id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   </head>
   <body class:list={{ 'paper-page': isPaper, 'collection-page': isCollection }}>
     <div class="site-grain" aria-hidden="true"></div>
